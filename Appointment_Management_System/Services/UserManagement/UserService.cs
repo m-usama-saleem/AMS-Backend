@@ -11,7 +11,7 @@ namespace Appointment_Management_System.Services.UserManagement
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserService: Controller, IUserService
+    public class UserService : Controller, IUserService
     {
         private readonly DatabaseContext _dbContext;
         public UserService(DatabaseContext databaseContext)
@@ -22,7 +22,7 @@ namespace Appointment_Management_System.Services.UserManagement
         #region Get 
         public List<AppUsers> GetAll()
         {
-            return _dbContext.AppUsers.Where(x=>x.isDeleted == null).ToList();
+            return _dbContext.AppUsers.Where(x => x.isDeleted == null).ToList();
         }
 
         #endregion
@@ -32,21 +32,29 @@ namespace Appointment_Management_System.Services.UserManagement
         [HttpPost]
         public JsonResult Login([FromBody] LoginViewModel model)
         {
+            AppUsers nullUser = null;
             if (model is not null)
             {
-                var user = _dbContext.AppUsers.Where(x => x.Name == model.UserName).SingleOrDefault();
-                if (user.Password == model.Password)
+                var user = _dbContext.AppUsers.Where(x => x.Name == model.UserName).FirstOrDefault();
+                if (user != null)
                 {
-                    return Json(new { success = true, message = "OK" });
+                    if (user.Password == model.Password)
+                    {
+                        return Json(new { user, success = true, message = "OK" });
+                    }
+                    else
+                    {
+                        return Json(new { user = nullUser, success = false, message = "Password incorrect" });
+                    }
                 }
                 else
                 {
-                    return Json(new { success = false, message = "Password incorrect" });
+                    return Json(new { user = nullUser, success = false, message = "User not exist" });
                 }
             }
             else
             {
-                return Json(new { success = false, message = "form is null" });
+                return Json(new { user = nullUser, success = false, message = "form is null" });
             }
         }
 
@@ -68,7 +76,7 @@ namespace Appointment_Management_System.Services.UserManagement
                 if (model is not null)
                 {
                     var userCount = _dbContext.AppUsers.Where(x => x.Name == model.Name).Count();
-                    if(userCount == 0)
+                    if (userCount == 0)
                     {
                         AppUsers user = new AppUsers()
                         {

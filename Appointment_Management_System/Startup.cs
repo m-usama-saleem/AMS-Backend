@@ -1,6 +1,7 @@
 using Appointment_Management_System.Models;
 using Appointment_Management_System.Services;
 using Appointment_Management_System.Services.AppointmentModule;
+using Appointment_Management_System.Services.Common;
 using Appointment_Management_System.Services.UserManagement;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,7 @@ namespace Appointment_Management_System
             services.AddCors();
 
             services.AddControllers();
+            services.AddScoped<ICommonService, CommonService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
 
@@ -45,7 +47,7 @@ namespace Appointment_Management_System
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder => builder
+            app.UseCors(builder => builder.WithOrigins("http://localhost:3000")
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());

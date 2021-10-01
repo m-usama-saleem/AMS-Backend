@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Appointment_Management_System.Services.Common
 {
+    [Route("api/[controller]/[action]")]
+    [ApiController]
     public class CommonService: Controller, ICommonService
     {
         private readonly DatabaseContext _dbContext;
