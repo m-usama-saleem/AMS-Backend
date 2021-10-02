@@ -27,5 +27,7 @@ namespace Appointment_Management_System.Services.Common
         {
             return _dbContext.Institutions.Where(x => x.isDeleted == null).ToList();
         }
+
+
     }
 }

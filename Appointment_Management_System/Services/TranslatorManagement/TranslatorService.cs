@@ -1,5 +1,6 @@
 ﻿using Appointment_Management_System.Models;
 using Appointment_Management_System.ViewModels.UserManagement;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,92 +8,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Appointment_Management_System.Services.UserManagement
+namespace Appointment_Management_System.Services.TranslatorManagement
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserService : Controller, IUserService
+    public class TranslatorService : Controller, ITranslatorService
     {
         private readonly DatabaseContext _dbContext;
-        public UserService(DatabaseContext databaseContext)
+        public TranslatorService(DatabaseContext databaseContext)
         {
             _dbContext = databaseContext;
         }
 
         #region Get 
-        public List<AppUsers> GetAll()
+        public List<Translators> GetAll()
         {
-            return _dbContext.AppUsers.Where(x => x.isDeleted == null).ToList();
+            return _dbContext.Translators.Where(x => x.isDeleted == null).ToList();
         }
 
         #endregion
 
-        #region Login / Logout
-
-        [HttpPost]
-        public JsonResult Login([FromBody] LoginViewModel model)
-        {
-            AppUsers nullUser = null;
-            if (model is not null)
-            {
-                var user = _dbContext.AppUsers.Where(x => x.Name == model.UserName).FirstOrDefault();
-                if (user != null)
-                {
-                    if (user.Password == model.Password)
-                    {
-                        return Json(new { user, success = true, message = "OK" });
-                    }
-                    else
-                    {
-                        return Json(new { user = nullUser, success = false, message = "Password incorrect" });
-                    }
-                }
-                else
-                {
-                    return Json(new { user = nullUser, success = false, message = "User not exist" });
-                }
-            }
-            else
-            {
-                return Json(new { user = nullUser, success = false, message = "form is null" });
-            }
-        }
-
-        public String LogOut()
-        {
-
-            return "OK";
-        }
-
-        #endregion
 
         #region Create / Update / Delete
 
         [HttpPost]
-        public JsonResult CreateUser([FromBody] UserViewModel model)
+        public JsonResult CreateTranslator([FromBody] TranslatorViewModel model)
         {
             try
             {
                 if (model is not null)
                 {
-                    var userCount = _dbContext.AppUsers.Where(x => x.Name == model.Name).Count();
+                    var userCount = _dbContext.Translators.Where(x => x.Name == model.Name).Count();
                     if (userCount == 0)
                     {
-                        AppUsers user = new AppUsers()
+                        Translators user = new Translators()
                         {
                             Email = model.Email,
                             Name = model.Name,
-                            Password = model.Password,
-                            Status = model.Status,
+                            Language = model.Language,
                             CreatedAt = DateTime.Now,
                             CreatedBy = "", //get current user from sesssion
                             Type = model.Type
                         };
 
-                        _dbContext.AppUsers.Add(user);
+                        _dbContext.Translators.Add(user);
                         _dbContext.SaveChanges();
 
-                        return Json(new {user, success = true, message = "User created successfully" });
+                        return Json(new { user, success = true, message = "User created successfully" });
                     }
                     else
                     {
@@ -111,20 +73,19 @@ namespace Appointment_Management_System.Services.UserManagement
         }
 
         [HttpPost]
-        public JsonResult EditUser([FromBody] UserViewModel model)
+        public JsonResult EditTranslator([FromBody] TranslatorViewModel model)
         {
             try
             {
                 if (model is not null)
                 {
-                    var user = _dbContext.AppUsers.Where(x => x.Id == model.Id && x.isDeleted == null).SingleOrDefault();
+                    var user = _dbContext.Translators.Where(x => x.Id == model.Id && x.isDeleted == null).SingleOrDefault();
                     if (user is not null)
                     {
                         user.Email = model.Email;
                         user.Name = model.Name;
-                        user.Password = model.Password;
-                        user.Status = model.Status;
                         user.Type = model.Type;
+                        user.Language = model.Language;
 
                         _dbContext.Entry(user).State = EntityState.Modified;
                         _dbContext.SaveChanges();
@@ -148,13 +109,13 @@ namespace Appointment_Management_System.Services.UserManagement
         }
 
         [HttpPost]
-        public JsonResult DeleteUser([FromBody] UserViewModel model)
+        public JsonResult DeleteTranslator([FromBody] ParamsViewModel model)
         {
             try
             {
                 if (model is not null)
                 {
-                    var user = _dbContext.AppUsers.Where(x => x.Id == model.Id && x.isDeleted == null).SingleOrDefault();
+                    var user = _dbContext.Translators.Where(x => x.Id == model.id && x.isDeleted == null).SingleOrDefault();
                     if (user is not null)
                     {
                         user.isDeleted = "Y";
@@ -181,6 +142,6 @@ namespace Appointment_Management_System.Services.UserManagement
         }
 
         #endregion
-
     }
+    
 }
