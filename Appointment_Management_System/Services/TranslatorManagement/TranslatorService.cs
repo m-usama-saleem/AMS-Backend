@@ -28,7 +28,6 @@ namespace Appointment_Management_System.Services.TranslatorManagement
 
         #endregion
 
-
         #region Create / Update / Delete
 
         [HttpPost]
@@ -38,7 +37,7 @@ namespace Appointment_Management_System.Services.TranslatorManagement
             {
                 if (model is not null)
                 {
-                    var userCount = _dbContext.Translators.Where(x => x.Name == model.Name).Count();
+                    var userCount = _dbContext.Translators.Where(x => x.Email == model.Email && x.isDeleted == null).Count();
                     if (userCount == 0)
                     {
                         Translators user = new Translators()
@@ -143,5 +142,4 @@ namespace Appointment_Management_System.Services.TranslatorManagement
 
         #endregion
     }
-    
 }

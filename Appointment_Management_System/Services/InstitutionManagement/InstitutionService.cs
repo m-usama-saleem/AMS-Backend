@@ -27,7 +27,6 @@ namespace Appointment_Management_System.Services.InstitutionManagement
 
         #endregion
 
-
         #region Create / Update / Delete
 
         [HttpPost]
@@ -37,7 +36,7 @@ namespace Appointment_Management_System.Services.InstitutionManagement
             {
                 if (model is not null)
                 {
-                    var userCount = _dbContext.Institutions.Where(x => x.Name == model.Name).Count();
+                    var userCount = _dbContext.Institutions.Where(x => x.Email == model.Email && x.isDeleted == null).Count();
                     if (userCount == 0)
                     {
                         Institutions user = new Institutions()

@@ -35,7 +35,7 @@ namespace Appointment_Management_System.Services.UserManagement
             AppUsers nullUser = null;
             if (model is not null)
             {
-                var user = _dbContext.AppUsers.Where(x => x.Name == model.UserName).FirstOrDefault();
+                var user = _dbContext.AppUsers.Where(x => x.Name == model.UserName && x.isDeleted == null).FirstOrDefault();
                 if (user != null)
                 {
                     if (user.Password == model.Password)
@@ -49,7 +49,7 @@ namespace Appointment_Management_System.Services.UserManagement
                 }
                 else
                 {
-                    return Json(new { user = nullUser, success = false, message = "User not exist" });
+                    return Json(new { user = nullUser, success = false, message = "User does not exist" });
                 }
             }
             else
@@ -75,7 +75,7 @@ namespace Appointment_Management_System.Services.UserManagement
             {
                 if (model is not null)
                 {
-                    var userCount = _dbContext.AppUsers.Where(x => x.Name == model.Name).Count();
+                    var userCount = _dbContext.AppUsers.Where(x => x.Email == model.Email && x.isDeleted == null).Count();
                     if (userCount == 0)
                     {
                         AppUsers user = new AppUsers()
