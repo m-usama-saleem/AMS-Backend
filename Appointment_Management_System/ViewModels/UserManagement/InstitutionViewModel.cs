@@ -29,8 +29,8 @@ namespace Appointment_Management_System.ViewModels.UserManagement
 
         public DateTime CreatedAt { get; set; }
 
-        [MaxLength(128)]
         [Required(AllowEmptyStrings = false)]
-        public String CreatedBy { get; set; }
+        public Int64 CreatedBy { get; set; }
+
     }
 }

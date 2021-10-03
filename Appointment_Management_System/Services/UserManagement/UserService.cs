@@ -85,7 +85,7 @@ namespace Appointment_Management_System.Services.UserManagement
                             Password = model.Password,
                             Status = model.Status,
                             CreatedAt = DateTime.Now,
-                            CreatedBy = "", //get current user from sesssion
+                            CreatedBy = model.CreatedBy, //get current user from sesssion
                             Type = model.Type
                         };
 

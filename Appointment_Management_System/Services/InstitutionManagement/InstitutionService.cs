@@ -45,7 +45,7 @@ namespace Appointment_Management_System.Services.InstitutionManagement
                             Name = model.Name,
                             Address = model.Address,
                             CreatedAt = DateTime.Now,
-                            CreatedBy = "", //get current user from sesssion
+                            CreatedBy = model.CreatedBy, //get current user from sesssion
                             Type = model.Type
                         };
 

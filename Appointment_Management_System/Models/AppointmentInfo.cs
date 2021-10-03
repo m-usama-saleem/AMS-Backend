@@ -38,6 +38,9 @@ namespace Appointment_Management_System.Models
         public Decimal Discount { get; set; }
         public Decimal NetPayment { get; set; }
 
+        [Required(AllowEmptyStrings = false)]
+        public Int64 CreatedBy { get; set; }
+
         [MaxLength(1)]
         public String isDeleted { get; set; }
     }

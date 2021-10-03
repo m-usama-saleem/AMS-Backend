@@ -46,7 +46,7 @@ namespace Appointment_Management_System.Services.TranslatorManagement
                             Name = model.Name,
                             Language = model.Language,
                             CreatedAt = DateTime.Now,
-                            CreatedBy = "", //get current user from sesssion
+                            CreatedBy = model.CreatedBy, //get current user from sesssion
                             Type = model.Type
                         };
 

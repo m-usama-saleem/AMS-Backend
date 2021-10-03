@@ -30,9 +30,9 @@ namespace Appointment_Management_System.Models
         public String Type { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        [MaxLength(128)]
-        [Required(AllowEmptyStrings = false)]
-        public String CreatedBy { get; set; }
+        [Required(AllowEmptyStrings= false)]
+        public Int64 CreatedBy { get; set; }
+
 
         [MaxLength(1)]
         public String isDeleted { get; set; }
