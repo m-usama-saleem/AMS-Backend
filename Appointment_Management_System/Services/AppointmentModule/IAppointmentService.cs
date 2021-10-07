@@ -1,5 +1,6 @@
 ﻿using Appointment_Management_System.Models;
 using Appointment_Management_System.ViewModels.AppointmentModule;
+using Appointment_Management_System.ViewModels.UserManagement;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,9 @@ namespace Appointment_Management_System.Services.AppointmentModule
 {
     public interface IAppointmentService
     {
-        public List<AppointmentInfo> GetAll();
+        public List<AppointmentViewModel> GetAll();
         public JsonResult CreateAppointment(AppointmentViewModel model);
         public JsonResult EditAppointment(AppointmentViewModel model);
-        public JsonResult DeleteAppointment(AppointmentViewModel model);
+        public JsonResult DeleteAppointment(ParamsViewModel model);
     }
 }

@@ -17,17 +17,22 @@ namespace Appointment_Management_System.Models
         [Required(AllowEmptyStrings = false)]
         public String AppointmentId { get; set; }
 
-        [MaxLength(50)]
         [Required(AllowEmptyStrings = false)]
-        public String TranslatorName { get; set; }
+        public Int64 TranslatorId { get; set; }
 
-        [MaxLength(128)]
         [Required(AllowEmptyStrings = false)]
-        public String InstitutionName { get; set; }
+        public Int64 InstitutionId { get; set; }
 
         [MaxLength(20)]
         [Required(AllowEmptyStrings = false)]
         public String Type { get; set; }
+        
+        [MaxLength(20)]
+        [Required(AllowEmptyStrings = false)]
+        public String Status { get; set; }
+        
+        [MaxLength(500)]
+        public String Attachments { get; set; }
 
         public DateTime EntryDate { get; set; }
         public DateTime AppointmentDate { get; set; }
