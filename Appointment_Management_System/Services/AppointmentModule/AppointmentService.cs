@@ -203,9 +203,17 @@ namespace Appointment_Management_System.Services.AppointmentModule
             try
             {
                 var translator = _dbContext.Translators.FirstOrDefault(x => x.Id == translatorId);
-                var files = AttachFile(attachments);
+                var listAttachments = attachments.Split(',');
+                var files = new List<FileStreamResult>();
+                foreach (var att in listAttachments)
+                {
+                    if(att.Length > 4)
+                    {
+                        files.Add(AttachFile(att));
+                    }
+                }
                 await SendEmailAsync("Qureshi", "email_id", "email_password", translator.Email,
-                    "New Appointment", "Hello! ", files,files.FileDownloadName, translator.Name);
+                    "New Appointment", "Hello! ", files, translator.Name);
             }
             catch (Exception ex)
             {
@@ -213,7 +221,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
             }
         }
 
-        public async Task SendEmailAsync(string fromName, string fromEmail, string fromEmailPassword, string toEmail, string subject, string body, FileStreamResult stream, string path, string toName = null)
+        public async Task SendEmailAsync(string fromName, string fromEmail, string fromEmailPassword, string toEmail, string subject, string body, List<FileStreamResult> streamList, string toName = null)
         {
             try
             {
@@ -224,7 +232,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     message.From.Add(new MailboxAddress(fromName, fromEmail));
                     message.To.Add(new MailboxAddress(ToUser, toEmail));
                     message.Subject = subject;
-                    
+
 
                     var multipart = new Multipart("mixed");
                     multipart.Add(new TextPart("html")
@@ -232,16 +240,19 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         Text = body
                     });
 
-                    // create an image attachment for the file located at path
-                    var attachment = new MimePart(System.Net.Mime.MediaTypeNames.Application.Pdf)
+                    foreach (var stream in streamList)
                     {
-                        Content = new MimeContent(stream.FileStream),
-                        ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
-                        ContentTransferEncoding = ContentEncoding.Base64,
-                        FileName = Path.GetFileName(path)
-                    };
+                        // create an image attachment for the file located at path
+                        var attachment = new MimePart(System.Net.Mime.MediaTypeNames.Application.Pdf)
+                        {
+                            Content = new MimeContent(stream.FileStream),
+                            ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                            ContentTransferEncoding = ContentEncoding.Base64,
+                            FileName = Path.GetFileName(stream.FileDownloadName)
+                        };
+                        multipart.Add(attachment);
+                    }
 
-                    multipart.Add(attachment);
                     message.Body = multipart;
 
                     await client.ConnectAsync("smtp.gmail.com", 465, true);
