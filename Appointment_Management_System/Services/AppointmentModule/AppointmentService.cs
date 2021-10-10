@@ -1,5 +1,7 @@
 ﻿using Appointment_Management_System.Models;
+using Appointment_Management_System.Services.FinanceModule;
 using Appointment_Management_System.ViewModels.AppointmentModule;
+using Appointment_Management_System.ViewModels.FinanceModule;
 using Appointment_Management_System.ViewModels.UserManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -97,8 +99,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         _dbContext.AppointmentInfo.Add(appInfo);
                         _dbContext.SaveChanges();
 
-                        sendEmailoTranslator(model.TranslatorId, model.Attachments);
-
+                        //sendEmailoTranslator(model.TranslatorId, model.Attachments);
 
                         return Json(new { appointment = appInfo, success = true, message = "Appointment created successfully" });
                     }
@@ -167,12 +168,28 @@ namespace Appointment_Management_System.Services.AppointmentModule
         {
             try
             {
+                FinanceService finance = new FinanceService(_dbContext);
+
                 if (model is not null)
                 {
                     var app = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == model.id && x.isDeleted == null);
                     if (app is not null)
                     {
                         app.Status = "Approved";
+
+                        FinanceViewModel fin = new FinanceViewModel();
+
+                        //Payable leg
+                        fin.AppointmentId_Fk = app.Id;
+                        fin.Status = "Pending";
+                        fin.Type = "P";
+                        finance.Create(fin);
+
+                        //Receivable leg
+                        fin.AppointmentId_Fk = app.Id;
+                        fin.Status = "Pending";
+                        fin.Type = "R";
+                        finance.Create(fin);
 
                         _dbContext.Entry(app).State = EntityState.Modified;
                         _dbContext.SaveChanges();

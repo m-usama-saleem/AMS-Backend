@@ -18,6 +18,7 @@ namespace Appointment_Management_System.Models
         public DbSet<Translators> Translators { get; set; }
         public DbSet<Institutions> Institutions { get; set; }
         public DbSet<Audit> AuditLogs { get; set; }
+        public DbSet<Finance> Finance { get; set; }
 
         public virtual int SaveChanges(string userId = null)
         {

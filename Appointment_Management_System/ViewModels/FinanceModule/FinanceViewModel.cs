@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Appointment_Management_System.ViewModels.FinanceModule
+{
+    public class FinanceViewModel
+    {
+        public Int64 Id { get; set; }
+        public Int64 AppointmentId_Fk { get; set; }
+        public String AppointmentId { get; set; }
+        public String Status { get; set; }
+        public String Type { get; set; }
+        public String Attachments { get; set; }
+        public Decimal WordCount { get; set; }
+        public Decimal Rate { get; set; }
+        public Decimal Hours { get; set; }
+        public Decimal Discount { get; set; }
+        public Decimal RideCost { get; set; }
+        public Decimal DailyAllowance { get; set; }
+        public Decimal Tax { get; set; }
+        public Decimal TicketCost { get; set; }
+        public Decimal NetPayment { get; set; }
+        public Int64 CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public String isDeleted { get; set; }
+    }
+}
