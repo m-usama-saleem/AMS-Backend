@@ -163,6 +163,38 @@ namespace Appointment_Management_System.Services.AppointmentModule
         }
 
         [HttpPost]
+        public JsonResult ApproveAppointment([FromBody] ParamsViewModel model)
+        {
+            try
+            {
+                if (model is not null)
+                {
+                    var app = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == model.id && x.isDeleted == null);
+                    if (app is not null)
+                    {
+                        app.Status = "Approved";
+
+                        _dbContext.Entry(app).State = EntityState.Modified;
+                        _dbContext.SaveChanges();
+
+                        return Json(new { success = true, message = "Appointment Approved successfully" });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "No such appointment exists to approve" });
+                    }
+                }
+                else
+                {
+                    return Json(new { success = false, message = "form is null" });
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
+        }
+         [HttpPost]
         public JsonResult DeleteAppointment([FromBody] ParamsViewModel model)
         {
             try
