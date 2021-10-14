@@ -38,14 +38,14 @@ namespace Appointment_Management_System.Services.AppointmentModule
             appointments.ForEach(x =>
             {
                 var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId)).Name;
-                var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == x.TranslatorId)).Name;
+                var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == x.TranslatorId));
 
                 model.Add(new AppointmentViewModel
                 {
                     Id = x.Id,
                     AppointmentId = x.AppointmentId,
                     TranslatorId = x.TranslatorId,
-                    TranslatorName = traName,
+                    TranslatorName = traName.FirstName + " " + traName.LastName,
                     InstitutionId = x.InstitutionId,
                     InstitutionName = insName,
                     Type = x.Type,
@@ -58,7 +58,9 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     NetPayment = x.NetPayment,
                     Status = x.Status,
                     IsDeleted = x.isDeleted,
-                    Attachments = x.Attachments
+                    Attachments = x.Attachments,
+                    Language = x.Language,
+
                 });
             });
             return model;
@@ -93,7 +95,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                             Status = "Pending",
                             NetPayment = ((model.Rate * model.Hours) + model.Tax - model.Discount),
                             CreatedBy = model.CreatedBy,
-                            Attachments = model.Attachments
+                            Attachments = model.Attachments,
+                            Language = model.Language
                         };
 
                         _dbContext.AppointmentInfo.Add(appInfo);
@@ -140,7 +143,11 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         app.Hours = model.Hours;
                         app.Discount = model.Discount;
                         app.NetPayment = ((model.Rate * model.Hours) + model.Tax - model.Discount);
-                        app.Attachments = model.Attachments;
+                        if (!string.IsNullOrEmpty(model.Attachments))
+                        {
+                            app.Attachments = model.Attachments;
+                        }
+                        app.Language = model.Language;
 
                         _dbContext.Entry(app).State = EntityState.Modified;
                         _dbContext.SaveChanges();
@@ -211,7 +218,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                 return Json(new { success = false, message = e.Message });
             }
         }
-         [HttpPost]
+        [HttpPost]
         public JsonResult DeleteAppointment([FromBody] ParamsViewModel model)
         {
             try
@@ -256,13 +263,13 @@ namespace Appointment_Management_System.Services.AppointmentModule
                 var files = new List<FileStreamResult>();
                 foreach (var att in listAttachments)
                 {
-                    if(att.Length > 4)
+                    if (att.Length > 4)
                     {
                         files.Add(AttachFile(att));
                     }
                 }
                 await SendEmailAsync("Qureshi", "email_id", "email_password", translator.Email,
-                    "New Appointment", "Hello! ", files, translator.Name);
+                    "New Appointment", "Hello! ", files, translator.FirstName);
             }
             catch (Exception ex)
             {

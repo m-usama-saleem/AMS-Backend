@@ -25,5 +25,6 @@ namespace Appointment_Management_System.ViewModels.AppointmentModule
         public String Status { get; set; }
         public String IsDeleted { get; set; }
         public String Attachments { get; set; }
+        public String Language { get; set; }
     }
 }

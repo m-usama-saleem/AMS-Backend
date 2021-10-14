@@ -18,12 +18,15 @@ namespace Appointment_Management_System.Models
         public String Name { get; set; }
 
         [MaxLength(128)]
+        public String Postcode { get; set; }
+
+        [MaxLength(128)]
+        public String City { get; set; }
+
+        [MaxLength(128)]
         [EmailAddress]
         [Required(AllowEmptyStrings = false)]
         public String Email { get; set; }
-
-        [MaxLength(10)]
-        public String Type { get; set; }
 
         [MaxLength(250)]
         public String Address { get; set; }

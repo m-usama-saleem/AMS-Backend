@@ -15,17 +15,24 @@ namespace Appointment_Management_System.ViewModels.UserManagement
         [Required(AllowEmptyStrings = false)]
         public String Email { get; set; }
 
-        [MaxLength(128)]
-        [Required(AllowEmptyStrings = false)]
-        public String Name { get; set; }
-
         [MaxLength(10)]
         [Required(AllowEmptyStrings = false)]
         public String Type { get; set; }
         
-        [MaxLength(10)]
+        [MaxLength(128)]
         [Required(AllowEmptyStrings = false)]
         public String Language { get; set; }
+
+        [MaxLength(128)]
+        [Required(AllowEmptyStrings = false)]
+        public String FirstName{ get; set; }
+        public String LastName { get; set; }
+        public String Contact { get; set; }
+        public String Address { get; set; }
+        public String City { get; set; }
+        public String PostCode { get; set; }
+        public String Country { get; set; }
+        public String Gender { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

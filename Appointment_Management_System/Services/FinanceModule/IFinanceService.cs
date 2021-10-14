@@ -12,6 +12,8 @@ namespace Appointment_Management_System.Services.FinanceModule
     public interface IFinanceService
     {
         public List<FinanceViewModel> GetAll();
+        public List<FinanceViewModel> GetAllPayables();
+        public List<FinanceViewModel> GetAllReceivables();
         public String Create(FinanceViewModel model);
         public JsonResult Edit(FinanceViewModel model);
         public JsonResult Delete(ParamsViewModel model);

@@ -31,6 +31,10 @@ namespace Appointment_Management_System.Models
         [Required(AllowEmptyStrings = false)]
         public String Status { get; set; }
         
+        [MaxLength(100)]
+        [Required(AllowEmptyStrings = false)]
+        public String Language { get; set; }
+        
         [MaxLength(500)]
         public String Attachments { get; set; }
 
@@ -42,6 +46,7 @@ namespace Appointment_Management_System.Models
         public Decimal Hours { get; set; }
         public Decimal Discount { get; set; }
         public Decimal NetPayment { get; set; }
+
 
         [Required(AllowEmptyStrings = false)]
         public Int64 CreatedBy { get; set; }

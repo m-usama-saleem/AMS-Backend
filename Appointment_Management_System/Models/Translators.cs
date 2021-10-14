@@ -15,7 +15,11 @@ namespace Appointment_Management_System.Models
 
         [MaxLength(128)]
         [Required(AllowEmptyStrings = false)]
-        public String Name { get; set; }
+        public String FirstName { get; set; }
+
+        [MaxLength(128)]
+        [Required(AllowEmptyStrings = false)]
+        public String LastName { get; set; }
 
         [MaxLength(128)]
         [EmailAddress]
@@ -25,6 +29,24 @@ namespace Appointment_Management_System.Models
         [MaxLength(128)]
         [Required(AllowEmptyStrings = false)]
         public String Language { get; set; }
+
+        [MaxLength(25)]
+        public String Country { get; set; }
+
+        [MaxLength(10)]
+        public String Gender { get; set; }
+
+        [MaxLength(250)]
+        public String Address { get; set; }
+
+        [MaxLength(20)]
+        public String PostCode { get; set; }
+
+        [MaxLength(25)]
+        public String City { get; set; }
+
+        [MaxLength(50)]
+        public String Contact { get; set; }
 
         [MaxLength(10)]
         public String Type { get; set; }

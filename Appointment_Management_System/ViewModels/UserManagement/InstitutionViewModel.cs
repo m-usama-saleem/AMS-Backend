@@ -19,13 +19,11 @@ namespace Appointment_Management_System.ViewModels.UserManagement
         [Required(AllowEmptyStrings = false)]
         public String Name { get; set; }
 
-        [MaxLength(10)]
-        [Required(AllowEmptyStrings = false)]
-        public String Type { get; set; }
-
         [MaxLength(250)]
         [Required(AllowEmptyStrings = false)]
         public String Address { get; set; }
+        public String City { get; set; }
+        public String Postcode { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

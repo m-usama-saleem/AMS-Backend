@@ -43,7 +43,16 @@ namespace Appointment_Management_System.Services.TranslatorManagement
                         Translators user = new Translators()
                         {
                             Email = model.Email,
-                            Name = model.Name,
+
+                            FirstName = model.FirstName,
+                            LastName = model.LastName,
+                            Contact = model.Contact,
+                            Address = model.Address,
+                            City = model.City,
+                            PostCode = model.PostCode,
+                            Country = model.Country,
+                            Gender = model.Gender,
+
                             Language = model.Language,
                             CreatedAt = DateTime.Now,
                             CreatedBy = model.CreatedBy, //get current user from sesssion
@@ -53,11 +62,11 @@ namespace Appointment_Management_System.Services.TranslatorManagement
                         _dbContext.Translators.Add(user);
                         _dbContext.SaveChanges();
 
-                        return Json(new { user, success = true, message = "User created successfully" });
+                        return Json(new { user, success = true, message = "Translator created successfully" });
                     }
                     else
                     {
-                        return Json(new { success = false, message = "User name already exists" });
+                        return Json(new { success = false, message = "Translator name already exists" });
                     }
                 }
                 else
@@ -82,18 +91,24 @@ namespace Appointment_Management_System.Services.TranslatorManagement
                     if (user is not null)
                     {
                         user.Email = model.Email;
-                        user.Name = model.Name;
                         user.Type = model.Type;
                         user.Language = model.Language;
-
+                        user.FirstName = model.FirstName;
+                        user.LastName = model.LastName;
+                        user.Contact = model.Contact;
+                        user.Address = model.Address;
+                        user.City = model.City;
+                        user.PostCode = model.PostCode;
+                        user.Country = model.Country;
+                        user.Gender = model.Gender;
                         _dbContext.Entry(user).State = EntityState.Modified;
                         _dbContext.SaveChanges();
 
-                        return Json(new { success = true, message = "User updated successfully" });
+                        return Json(new { success = true, message = "Translator updated successfully" });
                     }
                     else
                     {
-                        return Json(new { success = false, message = "No such user exists to update" });
+                        return Json(new { success = false, message = "No such Translator exists to update" });
                     }
                 }
                 else
@@ -122,11 +137,11 @@ namespace Appointment_Management_System.Services.TranslatorManagement
 
                         _dbContext.SaveChanges();
 
-                        return Json(new { success = true, message = "User deleted successfully" });
+                        return Json(new { success = true, message = "Translator deleted successfully" });
                     }
                     else
                     {
-                        return Json(new { success = false, message = "No such user exists to delete" });
+                        return Json(new { success = false, message = "No such Translator exists to delete" });
                     }
                 }
                 else

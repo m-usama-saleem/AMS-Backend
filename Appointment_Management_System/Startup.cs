@@ -2,6 +2,7 @@ using Appointment_Management_System.Models;
 using Appointment_Management_System.Services;
 using Appointment_Management_System.Services.AppointmentModule;
 using Appointment_Management_System.Services.Common;
+using Appointment_Management_System.Services.FinanceModule;
 using Appointment_Management_System.Services.InstitutionManagement;
 using Appointment_Management_System.Services.TranslatorManagement;
 using Appointment_Management_System.Services.UserManagement;
@@ -40,6 +41,7 @@ namespace Appointment_Management_System
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<ITranslatorService, TranslatorService>();
             services.AddScoped<IInstitutionService, InstitutionService>();
+            services.AddScoped<IFinanceService, FinanceService>();
 
         }
 

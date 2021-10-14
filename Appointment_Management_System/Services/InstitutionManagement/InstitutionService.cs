@@ -36,27 +36,28 @@ namespace Appointment_Management_System.Services.InstitutionManagement
             {
                 if (model is not null)
                 {
-                    var userCount = _dbContext.Institutions.Where(x => x.Email == model.Email && x.isDeleted == null).Count();
-                    if (userCount == 0)
+                    var InstituteCount = _dbContext.Institutions.Where(x => x.Email == model.Email && x.isDeleted == null).Count();
+                    if (InstituteCount == 0)
                     {
                         Institutions user = new Institutions()
                         {
                             Email = model.Email,
                             Name = model.Name,
                             Address = model.Address,
+                            City = model.City,
+                            Postcode = model.Postcode,
                             CreatedAt = DateTime.Now,
                             CreatedBy = model.CreatedBy, //get current user from sesssion
-                            Type = model.Type
                         };
 
                         _dbContext.Institutions.Add(user);
                         _dbContext.SaveChanges();
 
-                        return Json(new { user, success = true, message = "User created successfully" });
+                        return Json(new { user, success = true, message = "Institute created successfully" });
                     }
                     else
                     {
-                        return Json(new { success = false, message = "User name already exists" });
+                        return Json(new { success = false, message = "Institute name already exists" });
                     }
                 }
                 else
@@ -82,17 +83,18 @@ namespace Appointment_Management_System.Services.InstitutionManagement
                     {
                         user.Email = model.Email;
                         user.Name = model.Name;
-                        user.Type = model.Type;
                         user.Address = model.Address;
+                        user.Postcode = model.Postcode;
+                        user.City = model.City;
 
                         _dbContext.Entry(user).State = EntityState.Modified;
                         _dbContext.SaveChanges();
 
-                        return Json(new { success = true, message = "User updated successfully" });
+                        return Json(new { success = true, message = "Institute updated successfully" });
                     }
                     else
                     {
-                        return Json(new { success = false, message = "No such user exists to update" });
+                        return Json(new { success = false, message = "No such Institute exists to update" });
                     }
                 }
                 else
@@ -121,11 +123,11 @@ namespace Appointment_Management_System.Services.InstitutionManagement
 
                         _dbContext.SaveChanges();
 
-                        return Json(new { success = true, message = "User deleted successfully" });
+                        return Json(new { success = true, message = "Institute deleted successfully" });
                     }
                     else
                     {
-                        return Json(new { success = false, message = "No such user exists to delete" });
+                        return Json(new { success = false, message = "No such Institute exists to delete" });
                     }
                 }
                 else

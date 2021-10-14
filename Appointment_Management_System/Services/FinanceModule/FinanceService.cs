@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 
 namespace Appointment_Management_System.Services.FinanceModule
 {
-    public class FinanceService: Controller, IFinanceService
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class FinanceService : Controller, IFinanceService
     {
         private readonly DatabaseContext _dbContext;
 
@@ -21,23 +23,34 @@ namespace Appointment_Management_System.Services.FinanceModule
 
         public List<FinanceViewModel> GetAll()
         {
-            List <FinanceViewModel> model = new List<FinanceViewModel>();
+            List<FinanceViewModel> model = new List<FinanceViewModel>();
 
-            var finance = _dbContext.Finance.Where(x=>x.isDeleted == null).ToList();
+            var finance = _dbContext.Finance.Where(x => x.isDeleted == null).ToList();
             finance.ForEach(x =>
             {
-                var appId = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId)).AppointmentId;
+                var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
+                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId)).Name;
+                var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == appointment.TranslatorId));
 
                 model.Add(new FinanceViewModel
                 {
                     Id = x.Id,
                     AppointmentId_Fk = x.AppointmentId,
-                    AppointmentId = appId,
+                    AppointmentId = appointment.AppointmentId,
+                    AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
+                    AppointmentInstitute = insName,
+                    AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                    AppointmentType = appointment.Type,
                     Type = x.Type,
                     Tax = x.Tax,
                     WordCount = x.WordCount,
                     Rate = x.Rate,
                     Hours = x.Hours,
+                    AppointmentStart = x.AppointmentStart,
+                    StartOfTheTrip = x.StartOfTheTrip,
+                    EndOfTheTrip = x.EndOfTheTrip,
+                    EndOfTheAppointment = x.EndOfTheAppointment,
+                    TotalHours = x.TotalHours,
                     Discount = x.Discount,
                     NetPayment = x.NetPayment,
                     Status = x.Status,
@@ -53,22 +66,100 @@ namespace Appointment_Management_System.Services.FinanceModule
 
         }
 
-        public List<Finance> GetAllPayables()
+        public List<FinanceViewModel> GetAllPayables()
         {
-            return _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P" && x.Status != "Completed").ToList();
+            List<FinanceViewModel> model = new List<FinanceViewModel>();
+
+            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P" && x.Status != "Completed").ToList();
+            finance.ForEach(x =>
+            {
+                var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
+                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId)).Name;
+                var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == appointment.TranslatorId));
+
+                model.Add(new FinanceViewModel
+                {
+                    Id = x.Id,
+                    AppointmentId_Fk = x.AppointmentId,
+                    AppointmentId = appointment.AppointmentId,
+                    AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
+                    AppointmentInstitute = insName,
+                    AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                    AppointmentType = appointment.Type,
+                    Type = x.Type,
+                    Tax = x.Tax,
+                    WordCount = x.WordCount,
+                    Rate = x.Rate,
+                    Hours = x.Hours,
+                    Discount = x.Discount,
+                    NetPayment = x.NetPayment,
+                    Status = x.Status,
+                    RideCost = x.RideCost,
+                    AppointmentStart = x.AppointmentStart,
+                    StartOfTheTrip = x.StartOfTheTrip,
+                    EndOfTheTrip = x.EndOfTheTrip,
+                    EndOfTheAppointment = x.EndOfTheAppointment,
+                    TotalHours = x.TotalHours,
+                    DailyAllowance = x.DailyAllowance,
+                    TicketCost = x.TicketCost,
+                    isDeleted = x.isDeleted,
+                    CreatedBy = x.CreatedBy,
+                    Attachments = x.Attachments
+                });
+            });
+            return model;
         }
 
-        public List<Finance> GetAllReceivables()
+        public List<FinanceViewModel> GetAllReceivables()
         {
-            return _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "R" && x.Status != "Completed").ToList();
+            List<FinanceViewModel> model = new List<FinanceViewModel>();
+
+            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "R" && x.Status != "Completed").ToList();
+            finance.ForEach(x =>
+            {
+                var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
+                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId)).Name;
+                var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == appointment.TranslatorId));
+
+                model.Add(new FinanceViewModel
+                {
+                    Id = x.Id,
+                    AppointmentId_Fk = x.AppointmentId,
+                    AppointmentId = appointment.AppointmentId,
+                    AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
+                    AppointmentInstitute = insName,
+                    AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                    AppointmentType = appointment.Type,
+                    Type = x.Type,
+                    Tax = x.Tax,
+                    WordCount = x.WordCount,
+                    Rate = x.Rate,
+                    Hours = x.Hours,
+                    AppointmentStart = x.AppointmentStart,
+                    StartOfTheTrip = x.StartOfTheTrip,
+                    EndOfTheTrip = x.EndOfTheTrip,
+                    EndOfTheAppointment = x.EndOfTheAppointment,
+                    TotalHours = x.TotalHours,
+                    Discount = x.Discount,
+                    NetPayment = x.NetPayment,
+                    Status = x.Status,
+                    RideCost = x.RideCost,
+                    DailyAllowance = x.DailyAllowance,
+                    TicketCost = x.TicketCost,
+                    isDeleted = x.isDeleted,
+                    CreatedBy = x.CreatedBy,
+                    Attachments = x.Attachments
+                });
+            });
+            return model;
         }
 
         [HttpPost]
-        public String Create([FromBody]FinanceViewModel model)
+        public String Create([FromBody] FinanceViewModel model)
         {
             try
             {
-                if(model is not null)
+                if (model is not null)
                 {
                     Finance finance = new Finance()
                     {
@@ -79,6 +170,11 @@ namespace Appointment_Management_System.Services.FinanceModule
                         WordCount = model.WordCount,
                         Rate = model.Rate,
                         Hours = model.Hours,
+                        AppointmentStart = model.AppointmentStart,
+                        StartOfTheTrip = model.StartOfTheTrip,
+                        EndOfTheTrip = model.EndOfTheTrip,
+                        EndOfTheAppointment = model.EndOfTheAppointment,
+                        TotalHours = model.TotalHours,
                         Discount = model.Discount,
                         RideCost = model.RideCost,
                         DailyAllowance = model.DailyAllowance,
@@ -109,7 +205,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                     //return Json(new { success = false, message = "form is null" });
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return e.Message;
                 //return Json(new { success = false, message = e.Message });
@@ -131,9 +227,9 @@ namespace Appointment_Management_System.Services.FinanceModule
                                             x.Status == "Approved" &&
                                             x.isDeleted == null).ToList();
 
-                        if(app.Count() == 2) //both legs approved then mark status completed
+                        if (app.Count() == 2) //both legs approved then mark status completed
                         {
-                            foreach(var item in app)
+                            foreach (var item in app)
                             {
                                 item.Status = "Completed";
                                 _dbContext.Entry(item).State = EntityState.Modified;
@@ -171,10 +267,10 @@ namespace Appointment_Management_System.Services.FinanceModule
         {
             try
             {
-                if(model is not null)
+                if (model is not null)
                 {
                     var finance = _dbContext.Finance.Where(x => x.Id == model.Id && x.isDeleted == null).SingleOrDefault();
-                    if(finance is not null)
+                    if (finance is not null)
                     {
                         finance.AppointmentId = model.AppointmentId_Fk;
                         finance.Status = model.Status;
@@ -183,6 +279,11 @@ namespace Appointment_Management_System.Services.FinanceModule
                         finance.WordCount = model.WordCount;
                         finance.Rate = model.Rate;
                         finance.Hours = model.Hours;
+                        finance.AppointmentStart = model.AppointmentStart;
+                        finance.StartOfTheTrip = model.StartOfTheTrip;
+                        finance.EndOfTheTrip = model.EndOfTheTrip;
+                        finance.EndOfTheAppointment = model.EndOfTheAppointment;
+                        finance.TotalHours = model.TotalHours;
                         finance.Discount = model.Discount;
                         finance.RideCost = model.RideCost;
                         finance.DailyAllowance = model.DailyAllowance;
@@ -218,7 +319,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                     return Json(new { success = false, message = "form is null" });
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return Json(new { success = false, message = e.Message });
             }
