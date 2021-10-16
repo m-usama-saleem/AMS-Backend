@@ -14,6 +14,7 @@ namespace Appointment_Management_System.ViewModels.FinanceModule
         public String AppointmentDate { get; set; }
         public String AppointmentInstitute { get; set; }
         public String AppointmentTranslator { get; set; }
+        public String AppointmentLanguage { get; set; }
         public String Status { get; set; }
         public String Type { get; set; }
         public String Attachments { get; set; }
@@ -21,7 +22,7 @@ namespace Appointment_Management_System.ViewModels.FinanceModule
         public String AppointmentStart { get; set; }
         public String EndOfTheAppointment { get; set; }
         public String EndOfTheTrip { get; set; }
-        public String TotalHours { get; set; }
+        public Decimal TotalHours { get; set; }
         public Decimal WordCount { get; set; }
         public Decimal Rate { get; set; }
         public Decimal Hours { get; set; }

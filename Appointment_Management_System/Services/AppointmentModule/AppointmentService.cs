@@ -31,6 +31,39 @@ namespace Appointment_Management_System.Services.AppointmentModule
 
         #region Get
 
+        public List<AppointmentViewModel> GetAllIncomplete()
+        {
+            List<AppointmentViewModel> model = new List<AppointmentViewModel>();
+            var appointments = _dbContext.AppointmentInfo.Where(x => x.isDeleted == null && x.Status != "Completed").ToList();
+            appointments.ForEach(x =>
+            {
+                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId)).Name;
+                var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == x.TranslatorId));
+
+                model.Add(new AppointmentViewModel
+                {
+                    Id = x.Id,
+                    AppointmentId = x.AppointmentId,
+                    TranslatorId = x.TranslatorId,
+                    TranslatorName = traName.FirstName + " " + traName.LastName,
+                    InstitutionId = x.InstitutionId,
+                    InstitutionName = insName,
+                    Type = x.Type,
+                    EntryDate = x.EntryDate,
+                    AppointmentDate = x.AppointmentDate,
+                    Tax = x.Tax,
+                    Rate = x.Rate,
+                    Hours = x.Hours,
+                    Discount = x.Discount,
+                    NetPayment = x.NetPayment,
+                    Status = x.Status,
+                    IsDeleted = x.isDeleted,
+                    Attachments = x.Attachments,
+                    Language = x.Language,
+                });
+            });
+            return model;
+        }
         public List<AppointmentViewModel> GetAll()
         {
             List<AppointmentViewModel> model = new List<AppointmentViewModel>();
@@ -60,7 +93,6 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     IsDeleted = x.isDeleted,
                     Attachments = x.Attachments,
                     Language = x.Language,
-
                 });
             });
             return model;

@@ -31,7 +31,7 @@ namespace Appointment_Management_System.Models
         public String AppointmentStart { get; set; }
         public String EndOfTheAppointment { get; set; }
         public String EndOfTheTrip { get; set; }
-        public String TotalHours { get; set; }
+        public Decimal TotalHours { get; set; }
 
         public Decimal WordCount { get; set; }
         public Decimal Rate { get; set; }

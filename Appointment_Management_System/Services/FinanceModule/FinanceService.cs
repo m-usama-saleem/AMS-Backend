@@ -40,6 +40,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                     AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
                     AppointmentInstitute = insName,
                     AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                    AppointmentLanguage = appointment.Language,
                     AppointmentType = appointment.Type,
                     Type = x.Type,
                     Tax = x.Tax,
@@ -85,6 +86,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                     AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
                     AppointmentInstitute = insName,
                     AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                    AppointmentLanguage = appointment.Language,
                     AppointmentType = appointment.Type,
                     Type = x.Type,
                     Tax = x.Tax,
@@ -129,6 +131,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                     AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
                     AppointmentInstitute = insName,
                     AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                    AppointmentLanguage = appointment.Language,
                     AppointmentType = appointment.Type,
                     Type = x.Type,
                     Tax = x.Tax,
@@ -223,28 +226,34 @@ namespace Appointment_Management_System.Services.FinanceModule
                     {
                         fin.Status = "Approved";
 
-                        var app = _dbContext.Finance.Where(x => x.AppointmentId == fin.AppointmentId &&
-                                            x.Status == "Approved" &&
-                                            x.isDeleted == null).ToList();
-
-                        if (app.Count() == 2) //both legs approved then mark status completed
-                        {
-                            foreach (var item in app)
-                            {
-                                item.Status = "Completed";
-                                _dbContext.Entry(item).State = EntityState.Modified;
-                            }
-
-                            var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
-                            appointment.Status = "Completed";
-
-                            _dbContext.Entry(appointment).State = EntityState.Modified;
-                        }
 
                         _dbContext.Entry(fin).State = EntityState.Modified;
-                        _dbContext.SaveChanges();
+                        var result = _dbContext.SaveChanges();
+                        if (result > 0)
+                        {
 
-                        return Json(new { success = true, message = "Approved successfully" });
+                            var app = _dbContext.Finance.Where(x => x.AppointmentId == fin.AppointmentId &&
+                                               x.Status == "Approved" &&
+                                               x.isDeleted == null).ToList();
+
+                            if (app.Count() == 2) //both legs approved then mark status completed
+                            {
+                                foreach (var item in app)
+                                {
+                                    item.Status = "Completed";
+                                    _dbContext.Entry(item).State = EntityState.Modified;
+                                }
+
+                                var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
+                                appointment.Status = "Completed";
+
+                                _dbContext.Entry(appointment).State = EntityState.Modified;
+                                _dbContext.SaveChanges();
+                            }
+                            return Json(new { success = true, message = "Approved successfully" });
+                        }
+
+                        return Json(new { success = false, message = "Not Approved" });
                     }
                     else
                     {
