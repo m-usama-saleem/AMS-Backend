@@ -270,6 +270,70 @@ namespace Appointment_Management_System.Services.FinanceModule
                 return Json(new { success = false, message = e.Message });
             }
         }
+        [HttpPost]
+        public JsonResult MultipleApprove([FromBody] List<ParamsViewModel> list)
+        {
+            try
+            {
+                if (list.Count > 0)
+                {
+                    var aprovedList = new List<long>();
+                    foreach (var model in list)
+                    {
+                        var fin = _dbContext.Finance.SingleOrDefault(x => x.Id == model.id && x.isDeleted == null);
+                        if (fin is not null)
+                        {
+                            fin.Status = "Approved";
+
+                            _dbContext.Entry(fin).State = EntityState.Modified;
+                            var result = _dbContext.SaveChanges();
+                            if (result > 0)
+                            {
+                                aprovedList.Add(model.id);
+                                var app = _dbContext.Finance.Where(x => x.AppointmentId == fin.AppointmentId &&
+                                                   x.Status == "Approved" &&
+                                                   x.isDeleted == null).ToList();
+
+                                if (app.Count() == 2) //both legs approved then mark status completed
+                                {
+                                    foreach (var item in app)
+                                    {
+                                        item.Status = "Completed";
+                                        _dbContext.Entry(item).State = EntityState.Modified;
+                                    }
+
+                                    var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
+                                    appointment.Status = "Completed";
+
+                                    _dbContext.Entry(appointment).State = EntityState.Modified;
+                                    _dbContext.SaveChanges();
+                                }
+                            }
+                        }
+                    }
+                    if (aprovedList.Count == list.Count)
+                    {
+                        return Json(new { list, success = true, message = "Approved successfully" });
+                    }
+                    else if(aprovedList.Count < list.Count && aprovedList.Count!=0)
+                    {
+                        return Json(new { list, success = true , message = "Some Payable Approved successfully" });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Not Approved" });
+                    }
+                }
+                else
+                {
+                    return Json(new { success = false, message = "form is null" });
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, message = e.Message });
+            }
+        }
 
         [HttpPost]
         public JsonResult Edit(FinanceViewModel model)
@@ -307,11 +371,11 @@ namespace Appointment_Management_System.Services.FinanceModule
 
                         if (model.Type == "P")
                         {
-                            return Json(new { Finance = finance, success = true, message = "Payable updated successfully" });
+                            return Json(new { Finance = model, success = true, message = "Payable updated successfully" });
                         }
                         else if (model.Type == "R")
                         {
-                            return Json(new { Finance = finance, success = true, message = "Receivable updated successfully" });
+                            return Json(new { Finance = model, success = true, message = "Receivable updated successfully" });
                         }
                         else
                         {
