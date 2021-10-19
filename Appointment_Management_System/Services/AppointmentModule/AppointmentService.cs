@@ -175,11 +175,15 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         app.Hours = model.Hours;
                         app.Discount = model.Discount;
                         app.NetPayment = ((model.Rate * model.Hours) + model.Tax - model.Discount);
+                        app.Language = model.Language;
+                        
                         if (!string.IsNullOrEmpty(model.Attachments))
                         {
-                            app.Attachments = model.Attachments;
+                            if (!string.IsNullOrEmpty(app.Attachments))
+                            {
+                                app.Attachments += model.Attachments;
+                            }
                         }
-                        app.Language = model.Language;
 
                         _dbContext.Entry(app).State = EntityState.Modified;
                         _dbContext.SaveChanges();
