@@ -262,6 +262,13 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     {
                         app.isDeleted = "Y";
 
+                        var fin = _dbContext.Finance.Where(x => x.AppointmentId == app.Id && x.isDeleted == null).ToList();
+                        foreach(var item in fin)
+                        {
+                            item.isDeleted = "Y";
+                            _dbContext.Entry(item).State = EntityState.Modified;
+                        }
+
                         _dbContext.Entry(app).State = EntityState.Modified;
                         _dbContext.SaveChanges();
 
