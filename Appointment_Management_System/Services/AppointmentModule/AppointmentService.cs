@@ -226,12 +226,14 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         fin.AppointmentId_Fk = app.Id;
                         fin.Status = "Pending";
                         fin.Type = "P";
+                        fin.Tax = 19;
                         finance.Create(fin);
 
                         //Receivable leg
                         fin.AppointmentId_Fk = app.Id;
                         fin.Status = "Pending";
                         fin.Type = "R";
+                        fin.Tax = 19;
                         finance.Create(fin);
 
                         _dbContext.Entry(app).State = EntityState.Modified;

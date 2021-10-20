@@ -71,7 +71,9 @@ namespace Appointment_Management_System.Services.FinanceModule
         {
             List<FinanceViewModel> model = new List<FinanceViewModel>();
 
-            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P" && x.Status != "Completed").ToList();
+            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P" && x.Status != "Completed")
+                            .OrderByDescending(x=>x.CreatedAt).ToList();
+
             finance.ForEach(x =>
             {
                 var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
@@ -116,7 +118,8 @@ namespace Appointment_Management_System.Services.FinanceModule
         {
             List<FinanceViewModel> model = new List<FinanceViewModel>();
 
-            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "R" && x.Status != "Completed").ToList();
+            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "R" && x.Status != "Completed")
+                            .OrderByDescending(x=>x.CreatedAt).ToList();
             finance.ForEach(x =>
             {
                 var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
