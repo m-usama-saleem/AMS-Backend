@@ -35,6 +35,9 @@ namespace Appointment_Management_System.Models
 
         public Decimal WordCount { get; set; }
         public Decimal Rate { get; set; }
+        public Decimal FlatRate { get; set; }
+        public Decimal Paragraph { get; set; }
+        public Decimal Postage { get; set; }
         public Decimal Hours { get; set; }
         public Decimal Discount { get; set; }
         public Decimal RideCost { get; set; }

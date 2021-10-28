@@ -1,4 +1,5 @@
 ﻿using Appointment_Management_System.Models;
+using Appointment_Management_System.ViewModels.Commons;
 using Appointment_Management_System.ViewModels.FinanceModule;
 using Appointment_Management_System.ViewModels.UserManagement;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +47,9 @@ namespace Appointment_Management_System.Services.FinanceModule
                     Tax = x.Tax,
                     WordCount = x.WordCount,
                     Rate = x.Rate,
+                    FlatRate = x.FlatRate,
+                    Paragraph = x.Paragraph,
+                    Postage = x.Postage,
                     Hours = x.Hours,
                     AppointmentStart = x.AppointmentStart,
                     StartOfTheTrip = x.StartOfTheTrip,
@@ -72,7 +76,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             List<FinanceViewModel> model = new List<FinanceViewModel>();
 
             var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P" && x.Status != "Completed")
-                            .OrderByDescending(x=>x.CreatedAt).ToList();
+                            .OrderByDescending(x => x.CreatedAt).ToList();
 
             finance.ForEach(x =>
             {
@@ -94,6 +98,9 @@ namespace Appointment_Management_System.Services.FinanceModule
                     Tax = x.Tax,
                     WordCount = x.WordCount,
                     Rate = x.Rate,
+                    FlatRate = x.FlatRate,
+                    Paragraph = x.Paragraph,
+                    Postage = x.Postage,
                     Hours = x.Hours,
                     Discount = x.Discount,
                     NetPayment = x.NetPayment,
@@ -119,7 +126,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             List<FinanceViewModel> model = new List<FinanceViewModel>();
 
             var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "R" && x.Status != "Completed")
-                            .OrderByDescending(x=>x.CreatedAt).ToList();
+                            .OrderByDescending(x => x.CreatedAt).ToList();
             finance.ForEach(x =>
             {
                 var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
@@ -140,6 +147,9 @@ namespace Appointment_Management_System.Services.FinanceModule
                     Tax = x.Tax,
                     WordCount = x.WordCount,
                     Rate = x.Rate,
+                    FlatRate = x.FlatRate,
+                    Paragraph = x.Paragraph,
+                    Postage = x.Postage,
                     Hours = x.Hours,
                     AppointmentStart = x.AppointmentStart,
                     StartOfTheTrip = x.StartOfTheTrip,
@@ -174,6 +184,9 @@ namespace Appointment_Management_System.Services.FinanceModule
                         Type = model.Type,
                         Attachments = model.Attachments,
                         WordCount = model.WordCount,
+                        FlatRate = model.FlatRate,
+                        Paragraph = model.Paragraph,
+                        Postage = model.Postage,
                         Rate = model.Rate,
                         Hours = model.Hours,
                         AppointmentStart = model.AppointmentStart,
@@ -234,7 +247,6 @@ namespace Appointment_Management_System.Services.FinanceModule
                         var result = _dbContext.SaveChanges();
                         if (result > 0)
                         {
-
                             var app = _dbContext.Finance.Where(x => x.AppointmentId == fin.AppointmentId &&
                                                x.Status == "Approved" &&
                                                x.isDeleted == null).ToList();
@@ -249,6 +261,14 @@ namespace Appointment_Management_System.Services.FinanceModule
 
                                 var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
                                 appointment.Status = "Completed";
+
+                                _dbContext.Entry(appointment).State = EntityState.Modified;
+                                _dbContext.SaveChanges();
+                            }
+                            else
+                            {
+                                var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
+                                appointment.Status = "PartiallyCompleted";
 
                                 _dbContext.Entry(appointment).State = EntityState.Modified;
                                 _dbContext.SaveChanges();
@@ -318,9 +338,9 @@ namespace Appointment_Management_System.Services.FinanceModule
                     {
                         return Json(new { list, success = true, message = "Approved successfully" });
                     }
-                    else if(aprovedList.Count < list.Count && aprovedList.Count!=0)
+                    else if (aprovedList.Count < list.Count && aprovedList.Count != 0)
                     {
-                        return Json(new { list, success = true , message = "Some Payable Approved successfully" });
+                        return Json(new { list, success = true, message = "Some Payable Approved successfully" });
                     }
                     else
                     {
@@ -354,6 +374,9 @@ namespace Appointment_Management_System.Services.FinanceModule
                         finance.Attachments = model.Attachments;
                         finance.WordCount = model.WordCount;
                         finance.Rate = model.Rate;
+                        finance.FlatRate = model.FlatRate;
+                        finance.Paragraph = model.Paragraph;
+                        finance.Postage = model.Postage;
                         finance.Hours = model.Hours;
                         finance.AppointmentStart = model.AppointmentStart;
                         finance.StartOfTheTrip = model.StartOfTheTrip;
@@ -433,5 +456,127 @@ namespace Appointment_Management_System.Services.FinanceModule
                 return Json(new { success = false, message = e.Message });
             }
         }
+
+        public List<BarChartViewModel> GetCompletedPayableStats()
+        {
+            List<BarChartViewModel> model = new List<BarChartViewModel>();
+
+            //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
+            var finance = (from fin in _dbContext.Finance
+                           join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
+                           where fin.isDeleted == null && fin.Status == "Completed" && fin.Type == "P"
+                           select new
+                           {
+                               Appointment = app,
+                               Payable = fin,
+                           }).ToList().GroupBy(x => x.Appointment.AppointmentDate.Month).ToList();
+
+            foreach (var pay in finance)
+            {
+                var completed_writing = pay.Where(x => x.Appointment.Type == "SCHREIBEN").ToList();
+                var completed_speaking = pay.Where(x => x.Appointment.Type == "SPRACHEN").ToList();
+
+                model.Add(new BarChartViewModel
+                {
+                    name = "Complete Payables",
+                    type = new DateTime(2020, pay.Key, 1).ToString("MMMM"),
+                    value1 = completed_writing.Count(),
+                    value2 = completed_speaking.Count()
+                });
+            }
+
+            return model;
+        }
+        public List<BarChartViewModel> GetInCompletedPayableStats()
+        {
+            List<BarChartViewModel> model = new List<BarChartViewModel>();
+
+            //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
+            var finance = (from fin in _dbContext.Finance
+                           join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
+                           where fin.isDeleted == null && fin.Status != "Completed" && fin.Type == "P"
+                           select new
+                           {
+                               Appointment = app,
+                               Payable = fin,
+                           }).ToList().GroupBy(x => x.Appointment.AppointmentDate.Month).ToList();
+
+            foreach (var pay in finance)
+            {
+                var completed_writing = pay.Where(x => x.Appointment.Type == "SCHREIBEN").ToList();
+                var completed_speaking = pay.Where(x => x.Appointment.Type == "SPRACHEN").ToList();
+
+                model.Add(new BarChartViewModel
+                {
+                    name = "Incomplete Payables",
+                    type = new DateTime(2020, pay.Key, 1).ToString("MMMM"),
+                    value1 = completed_writing.Count(),
+                    value2 = completed_speaking.Count()
+                });
+            }
+
+            return model;
+        }
+        public List<BarChartViewModel> GetCompletedReceivableStats()
+        {
+            List<BarChartViewModel> model = new List<BarChartViewModel>();
+
+            //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
+            var finance = (from fin in _dbContext.Finance
+                           join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
+                           where fin.isDeleted == null && fin.Status != "Completed" && fin.Type == "R"
+                           select new
+                           {
+                               Appointment = app,
+                               Payable = fin,
+                           }).ToList().GroupBy(x => x.Appointment.AppointmentDate.Month).ToList();
+
+            foreach (var pay in finance)
+            {
+                var completed_writing = pay.Where(x => x.Appointment.Type == "SCHREIBEN").ToList();
+                var completed_speaking = pay.Where(x => x.Appointment.Type == "SPRACHEN").ToList();
+
+                model.Add(new BarChartViewModel
+                {
+                    name = "Complete Receivable",
+                    type = new DateTime(2020, pay.Key, 1).ToString("MMMM"),
+                    value1 = completed_writing.Count(),
+                    value2 = completed_speaking.Count()
+                });
+            }
+
+            return model;
+        }
+         public List<BarChartViewModel> GetInCompletedReceivableStats()
+        {
+            List<BarChartViewModel> model = new List<BarChartViewModel>();
+
+            //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
+            var finance = (from fin in _dbContext.Finance
+                           join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
+                           where fin.isDeleted == null && fin.Status != "Completed" && fin.Type == "R"
+                           select new
+                           {
+                               Appointment = app,
+                               Payable = fin,
+                           }).ToList().GroupBy(x => x.Appointment.AppointmentDate.Month).ToList();
+
+            foreach (var pay in finance)
+            {
+                var completed_writing = pay.Where(x => x.Appointment.Type == "SCHREIBEN").ToList();
+                var completed_speaking = pay.Where(x => x.Appointment.Type == "SPRACHEN").ToList();
+
+                model.Add(new BarChartViewModel
+                {
+                    name = "Incomplete Receivables",
+                    type = new DateTime(2020, pay.Key, 1).ToString("MMMM"),
+                    value1 = completed_writing.Count(),
+                    value2 = completed_speaking.Count()
+                });
+            }
+
+            return model;
+        }
+
     }
 }

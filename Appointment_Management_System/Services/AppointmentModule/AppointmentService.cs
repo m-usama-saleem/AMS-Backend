@@ -1,6 +1,7 @@
 ﻿using Appointment_Management_System.Models;
 using Appointment_Management_System.Services.FinanceModule;
 using Appointment_Management_System.ViewModels.AppointmentModule;
+using Appointment_Management_System.ViewModels.Commons;
 using Appointment_Management_System.ViewModels.FinanceModule;
 using Appointment_Management_System.ViewModels.UserManagement;
 using Microsoft.AspNetCore.Http;
@@ -64,36 +65,130 @@ namespace Appointment_Management_System.Services.AppointmentModule
             });
             return model;
         }
-        public List<AppointmentViewModel> GetAll()
+        public List<AppointmentDetailViewModel> GetAll()
         {
-            List<AppointmentViewModel> model = new List<AppointmentViewModel>();
-            var appointments = _dbContext.AppointmentInfo.Where(x => x.isDeleted == null).ToList();
+            List<AppointmentDetailViewModel> model = new List<AppointmentDetailViewModel>();
+            var appointments = _dbContext.AppointmentInfo.ToList();
             appointments.ForEach(x =>
             {
                 var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId)).Name;
                 var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == x.TranslatorId));
 
-                model.Add(new AppointmentViewModel
+                var pay = _dbContext.Finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "P");
+                var rec = _dbContext.Finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "R");
+
+                model.Add(new AppointmentDetailViewModel
                 {
-                    Id = x.Id,
-                    AppointmentId = x.AppointmentId,
-                    TranslatorId = x.TranslatorId,
-                    TranslatorName = traName.FirstName + " " + traName.LastName,
-                    InstitutionId = x.InstitutionId,
-                    InstitutionName = insName,
-                    Type = x.Type,
-                    EntryDate = x.EntryDate,
-                    AppointmentDate = x.AppointmentDate,
-                    Tax = x.Tax,
-                    Rate = x.Rate,
-                    Hours = x.Hours,
-                    Discount = x.Discount,
-                    NetPayment = x.NetPayment,
-                    Status = x.Status,
-                    IsDeleted = x.isDeleted,
-                    Attachments = x.Attachments,
-                    Language = x.Language,
+                    Appointment = new AppointmentViewModel
+                    {
+                        Id = x.Id,
+                        AppointmentId = x.AppointmentId,
+                        TranslatorId = x.TranslatorId,
+                        TranslatorName = traName.FirstName + " " + traName.LastName,
+                        InstitutionId = x.InstitutionId,
+                        InstitutionName = insName,
+                        Type = x.Type,
+                        EntryDate = x.EntryDate,
+                        AppointmentDate = x.AppointmentDate,
+                        Tax = x.Tax,
+                        Rate = x.Rate,
+                        Hours = x.Hours,
+                        Discount = x.Discount,
+                        NetPayment = x.NetPayment,
+                        Status = x.Status,
+                        IsDeleted = x.isDeleted,
+                        Attachments = x.Attachments,
+                        Language = x.Language,
+                    },
+                    Payable = pay == null ? new FinanceViewModel() : new FinanceViewModel
+                    {
+                        Id = x.Id,
+                        AppointmentId_Fk = pay.AppointmentId,
+                        AppointmentId = x.AppointmentId,
+                        AppointmentDate = x.AppointmentDate.ToShortDateString(),
+                        AppointmentInstitute = insName,
+                        AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                        AppointmentLanguage = x.Language,
+                        AppointmentType = x.Type,
+
+                        Type = pay.Type,
+                        Tax = pay.Tax,
+                        WordCount = pay.WordCount,
+                        Rate = pay.Rate,
+                        FlatRate = pay.FlatRate,
+                        Paragraph = pay.Paragraph,
+                        Postage = pay.Postage,
+                        Hours = pay.Hours,
+                        AppointmentStart = pay.AppointmentStart,
+                        StartOfTheTrip = pay.StartOfTheTrip,
+                        EndOfTheTrip = pay.EndOfTheTrip,
+                        EndOfTheAppointment = pay.EndOfTheAppointment,
+                        TotalHours = pay.TotalHours,
+                        Discount = pay.Discount,
+                        NetPayment = pay.NetPayment,
+                        Status = pay.Status,
+                        RideCost = pay.RideCost,
+                        DailyAllowance = pay.DailyAllowance,
+                        TicketCost = pay.TicketCost,
+                        isDeleted = pay.isDeleted,
+                        CreatedBy = pay.CreatedBy,                        
+                    },
+                    Receivable = rec == null ? new FinanceViewModel() : new FinanceViewModel
+                    {
+                        Id = x.Id,
+                        AppointmentId_Fk = pay.AppointmentId,
+                        AppointmentId = x.AppointmentId,
+                        AppointmentDate = x.AppointmentDate.ToShortDateString(),
+                        AppointmentInstitute = insName,
+                        AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                        AppointmentLanguage = x.Language,
+                        AppointmentType = x.Type,
+
+                        Type = rec.Type,
+                        Tax = rec.Tax,
+                        WordCount = rec.WordCount,
+                        Rate = rec.Rate,
+                        Hours = rec.Hours,
+                        Discount = rec.Discount,
+                        NetPayment = rec.NetPayment,
+                        Status = rec.Status,
+                        isDeleted = rec.isDeleted,
+                        CreatedBy = rec.CreatedBy,
+                    }
                 });
+            });
+            return model;
+        }
+
+        public List<PieChartViewModel> GetAppointmentStats()
+        {
+            List<PieChartViewModel> model = new List<PieChartViewModel>();
+            var appointments = _dbContext.AppointmentInfo.ToList();
+
+            var pending = appointments.Where(x => x.Status == "Pending");
+            var completed = appointments.Where(x => x.Status == "Completed");
+            var p_completed = appointments.Where(x => x.Status == "PartiallyCompleted");
+            var approved = appointments.Where(x => x.Status == "Approved");
+
+            model.Add(new PieChartViewModel
+            {
+                name = "Pending",
+                value = pending.Count()
+            });
+            model.Add(new PieChartViewModel
+            {
+                name = "Completed",
+                value = completed.Count()
+            });
+            model.Add(new PieChartViewModel
+            {
+                name = "Partially Completed",
+                value = p_completed.Count()
+            });
+            model.Add(new PieChartViewModel
+            {
+                name = "Approved",
+                value = approved.Count()
             });
             return model;
         }
