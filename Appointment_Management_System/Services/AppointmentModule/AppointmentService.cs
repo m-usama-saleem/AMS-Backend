@@ -229,7 +229,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         _dbContext.AppointmentInfo.Add(appInfo);
                         _dbContext.SaveChanges();
 
-                        //sendEmailoTranslator(model.TranslatorId, model.Attachments);
+                        //sendEmailToTranslator(model.TranslatorId, model.Attachments);
 
                         return Json(new { appointment = appInfo, success = true, message = "Appointment created successfully" });
                     }
@@ -394,7 +394,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
         #endregion
 
         #region Emails
-        private async void sendEmailoTranslator(long translatorId, string attachments)
+        private async void sendEmailToTranslator(long translatorId, string attachments)
         {
             try
             {
@@ -416,7 +416,6 @@ namespace Appointment_Management_System.Services.AppointmentModule
 
             }
         }
-
         public async Task SendEmailAsync(string fromName, string fromEmail, string fromEmailPassword, string toEmail, string subject, string body, List<FileStreamResult> streamList, string toName = null)
         {
             try
@@ -507,6 +506,57 @@ namespace Appointment_Management_System.Services.AppointmentModule
                 return new ContentResult { StatusCode = (int)HttpStatusCode.InternalServerError, Content = "Unable to Upload File" + ex.Message };
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> UploadAndEmail(IFormCollection files)
+        {
+            try
+            {
+                if (files.Files.Count > 0)
+                {
+                    Int64 appointmendId = 0;
+                    var appId = files["AppointmentId"].ToString();
+                    if (!String.IsNullOrEmpty(appId))
+                    {
+                        appointmendId = Convert.ToInt64(appId);
+                    }
+                    var fileNames = "";
+                    foreach (var file in files.Files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            var g = Guid.NewGuid();
+                            var official = String.Format("{0}_{1}", g, file.FileName);
+
+                            string folderPath = AppDomain.CurrentDomain.BaseDirectory;
+                            string path = Path.Combine(folderPath, "uploadFiles");
+                            if (!Directory.Exists(path))
+                            {
+                                //If Directory (Folder) does not exists. Create it.
+                                Directory.CreateDirectory(path);
+                            }
+                            using (var fs = new FileStream(Path.Combine(path, official), FileMode.Create))
+                            {
+                                await file.CopyToAsync(fs);
+                            }
+                            fileNames += official + ",";
+                        }
+                    }
+                    var app = _dbContext.AppointmentInfo.FirstOrDefault(x => x.Id == appointmendId);
+                    if(app != null)
+                    {
+                        sendEmailToTranslator(app.TranslatorId, fileNames);
+                    }
+                    return new ContentResult { StatusCode = (int)HttpStatusCode.OK, Content = fileNames };
+                }
+
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return new ContentResult { StatusCode = (int)HttpStatusCode.InternalServerError, Content = "Unable to Upload File" + ex.Message };
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Download(FileData Data)
         {
