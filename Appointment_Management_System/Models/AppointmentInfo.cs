@@ -38,8 +38,16 @@ namespace Appointment_Management_System.Models
         [MaxLength(500)]
         public String Attachments { get; set; }
 
+        public String RoomNumber { get; set; }
+        public String AppointmentTime { get; set; }
+
         public DateTime EntryDate { get; set; }
         public DateTime AppointmentDate { get; set; }
+        public DateTime ApprovalDate { get; set; }
+        public Int64 ApprovalBy { get; set; }
+
+        public DateTime CompletionDate { get; set; }
+        public Int64 CompletionBy { get; set; }
 
         public Decimal Tax { get; set; }
         public Decimal Rate { get; set; }

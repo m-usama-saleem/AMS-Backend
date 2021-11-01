@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MimeKit;
+using Spire.Pdf;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,7 +39,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
             var appointments = _dbContext.AppointmentInfo.Where(x => x.isDeleted == null && x.Status != "Completed").ToList();
             appointments.ForEach(x =>
             {
-                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId)).Name;
+                var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId));
                 var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == x.TranslatorId));
 
                 model.Add(new AppointmentViewModel
@@ -48,7 +49,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     TranslatorId = x.TranslatorId,
                     TranslatorName = traName.FirstName + " " + traName.LastName,
                     InstitutionId = x.InstitutionId,
-                    InstitutionName = insName,
+                    InstitutionName = institute.Name,
+                    InstitutionAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
                     Type = x.Type,
                     EntryDate = x.EntryDate,
                     AppointmentDate = x.AppointmentDate,
@@ -61,6 +63,13 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     IsDeleted = x.isDeleted,
                     Attachments = x.Attachments,
                     Language = x.Language,
+                    ApprovalBy = x.ApprovalBy,
+                    ApprovalDate = x.ApprovalDate,
+                    CompletionBy = x.CompletionBy,
+                    CompletionDate = x.CompletionDate,
+                    CreatedBy = x.CreatedBy,
+                    AppointmentTime = x.AppointmentTime,
+                    RoomNumber = x.RoomNumber
                 });
             });
             return model;
@@ -71,7 +80,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
             var appointments = _dbContext.AppointmentInfo.ToList();
             appointments.ForEach(x =>
             {
-                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId)).Name;
+                var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId));
                 var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == x.TranslatorId));
 
                 var pay = _dbContext.Finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "P");
@@ -86,7 +95,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         TranslatorId = x.TranslatorId,
                         TranslatorName = traName.FirstName + " " + traName.LastName,
                         InstitutionId = x.InstitutionId,
-                        InstitutionName = insName,
+                        InstitutionName = institute.Name,
+                        InstitutionAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
                         Type = x.Type,
                         EntryDate = x.EntryDate,
                         AppointmentDate = x.AppointmentDate,
@@ -99,6 +109,12 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         IsDeleted = x.isDeleted,
                         Attachments = x.Attachments,
                         Language = x.Language,
+                        ApprovalBy = x.ApprovalBy,
+                        ApprovalDate = x.ApprovalDate,
+                        CompletionBy = x.CompletionBy,
+                        CompletionDate = x.CompletionDate,
+                        AppointmentTime = x.AppointmentTime,
+                        RoomNumber = x.RoomNumber
                     },
                     Payable = pay == null ? new FinanceViewModel() : new FinanceViewModel
                     {
@@ -106,7 +122,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         AppointmentId_Fk = pay.AppointmentId,
                         AppointmentId = x.AppointmentId,
                         AppointmentDate = x.AppointmentDate.ToShortDateString(),
-                        AppointmentInstitute = insName,
+                        AppointmentInstitute = institute.Name,
+                        InstituteAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
                         AppointmentTranslator = traName.FirstName + " " + traName.LastName,
                         AppointmentLanguage = x.Language,
                         AppointmentType = x.Type,
@@ -131,7 +148,11 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         DailyAllowance = pay.DailyAllowance,
                         TicketCost = pay.TicketCost,
                         isDeleted = pay.isDeleted,
-                        CreatedBy = pay.CreatedBy,                        
+                        CreatedBy = pay.CreatedBy,
+                        ApprovalBy = pay.ApprovalBy,
+                        ApprovalDate = pay.ApprovalDate,
+                        CompletionBy = pay.CompletionBy,
+                        CompletionDate = pay.CompletionDate
                     },
                     Receivable = rec == null ? new FinanceViewModel() : new FinanceViewModel
                     {
@@ -139,10 +160,16 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         AppointmentId_Fk = pay.AppointmentId,
                         AppointmentId = x.AppointmentId,
                         AppointmentDate = x.AppointmentDate.ToShortDateString(),
-                        AppointmentInstitute = insName,
+                        AppointmentInstitute = institute.Name,
+                        InstituteAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
                         AppointmentTranslator = traName.FirstName + " " + traName.LastName,
                         AppointmentLanguage = x.Language,
                         AppointmentType = x.Type,
+
+                        ApprovalBy = rec.ApprovalBy,
+                        ApprovalDate = rec.ApprovalDate,
+                        CompletionBy = rec.CompletionBy,
+                        CompletionDate = rec.CompletionDate,
 
                         Type = rec.Type,
                         Tax = rec.Tax,
@@ -223,7 +250,9 @@ namespace Appointment_Management_System.Services.AppointmentModule
                             NetPayment = ((model.Rate * model.Hours) + model.Tax - model.Discount),
                             CreatedBy = model.CreatedBy,
                             Attachments = model.Attachments,
-                            Language = model.Language
+                            Language = model.Language,
+                            AppointmentTime = model.AppointmentTime,
+                            RoomNumber = model.RoomNumber
                         };
 
                         _dbContext.AppointmentInfo.Add(appInfo);
@@ -271,7 +300,9 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         app.Discount = model.Discount;
                         app.NetPayment = ((model.Rate * model.Hours) + model.Tax - model.Discount);
                         app.Language = model.Language;
-                        
+                        app.AppointmentTime = model.AppointmentTime;
+                        app.RoomNumber = model.RoomNumber;
+
                         if (!string.IsNullOrEmpty(model.Attachments))
                         {
                             if (!string.IsNullOrEmpty(app.Attachments))
@@ -314,6 +345,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     if (app is not null)
                     {
                         app.Status = "Approved";
+                        app.ApprovalDate = DateTime.Now;
+                        app.ApprovalBy = model.userId;
 
                         FinanceViewModel fin = new FinanceViewModel();
 
@@ -322,6 +355,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         fin.Status = "Pending";
                         fin.Type = "P";
                         fin.Tax = 19;
+                        fin.CreatedBy = model.userId;
+
                         finance.Create(fin);
 
                         //Receivable leg
@@ -329,6 +364,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         fin.Status = "Pending";
                         fin.Type = "R";
                         fin.Tax = 19;
+                        fin.CreatedBy = model.userId;
                         finance.Create(fin);
 
                         _dbContext.Entry(app).State = EntityState.Modified;
@@ -364,7 +400,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         app.isDeleted = "Y";
 
                         var fin = _dbContext.Finance.Where(x => x.AppointmentId == app.Id && x.isDeleted == null).ToList();
-                        foreach(var item in fin)
+                        foreach (var item in fin)
                         {
                             item.isDeleted = "Y";
                             _dbContext.Entry(item).State = EntityState.Modified;
@@ -507,6 +543,65 @@ namespace Appointment_Management_System.Services.AppointmentModule
             }
         }
         [HttpPost]
+        public async Task<IActionResult> DownloadWord(IFormCollection files)
+        {
+            try
+            {
+                if (files.Files.Count > 0)
+                {
+                    var fileNames = "";
+                    foreach (var file in files.Files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            var g = Guid.NewGuid();
+                            var official = String.Format("{0}_{1}", g, file.FileName);
+
+                            string folderPath = AppDomain.CurrentDomain.BaseDirectory;
+                            string path = Path.Combine(folderPath, "uploadFiles");
+                            if (!Directory.Exists(path))
+                            {
+                                //If Directory (Folder) does not exists. Create it.
+                                Directory.CreateDirectory(path);
+                            }
+                            using (var fs = new FileStream(Path.Combine(path, official), FileMode.OpenOrCreate))
+                            {
+                                await file.CopyToAsync(fs);
+                                fs.Close();
+
+                                PdfDocument pdf = new PdfDocument();
+
+                                var allBytes = System.IO.File.ReadAllBytes(Path.Combine(path, official));
+
+                                var stream = new MemoryStream(0);
+                                stream.Write(allBytes, 0, allBytes.Length);
+                                pdf.LoadFromStream(stream);
+                                pdf.SaveToStream(stream, FileFormat.DOCX);
+                                pdf.SaveToFile(Path.Combine(path, "newFile.docx"), FileFormat.DOCX);
+                            }
+
+                            path = Path.Combine(path, "newFile.docx");
+                            var fileToDownload = new FileInfo(path);
+                            if (fileToDownload.Exists)
+                            {
+                                var fileContentResult = new FileContentResult(System.IO.File.ReadAllBytes(path), GetContentType(path))
+                                {
+                                    FileDownloadName = "newFile.docx"
+                                };
+                                return fileContentResult;
+                            }
+                        }
+                        return new ContentResult { StatusCode = (int)HttpStatusCode.OK, Content = fileNames };
+                    }
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return new ContentResult { StatusCode = (int)HttpStatusCode.InternalServerError, Content = "Unable to Upload File" + ex.Message };
+            }
+        }
+        [HttpPost]
         public async Task<IActionResult> UploadAndEmail(IFormCollection files)
         {
             try
@@ -542,7 +637,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         }
                     }
                     var app = _dbContext.AppointmentInfo.FirstOrDefault(x => x.Id == appointmendId);
-                    if(app != null)
+                    if (app != null)
                     {
                         sendEmailToTranslator(app.TranslatorId, fileNames);
                     }

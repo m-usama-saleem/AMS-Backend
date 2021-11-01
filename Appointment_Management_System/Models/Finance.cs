@@ -49,7 +49,11 @@ namespace Appointment_Management_System.Models
         [Required(AllowEmptyStrings = false)]
         public Int64 CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime ApprovalDate { get; set; }
+        public Int64 ApprovalBy { get; set; }
 
+        public DateTime CompletionDate { get; set; }
+        public Int64 CompletionBy { get; set; }
         [MaxLength(1)]
         public String isDeleted { get; set; }
     }

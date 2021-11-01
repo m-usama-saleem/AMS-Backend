@@ -14,9 +14,15 @@ namespace Appointment_Management_System.ViewModels.AppointmentModule
         public Int64 InstitutionId { get; set; }
         public Int64 CreatedBy { get; set; }
         public String InstitutionName { get; set; }
+        public String InstitutionAddress { get; set; }
         public String Type { get; set; }
         public DateTime EntryDate { get; set; }
         public DateTime AppointmentDate { get; set; }
+        public DateTime ApprovalDate { get; set; }
+        public Int64 ApprovalBy { get; set; }
+
+        public DateTime CompletionDate { get; set; }
+        public Int64 CompletionBy { get; set; }
         public Decimal Tax { get; set; }
         public Decimal Rate { get; set; }
         public Decimal Hours { get; set; }
@@ -26,5 +32,7 @@ namespace Appointment_Management_System.ViewModels.AppointmentModule
         public String IsDeleted { get; set; }
         public String Attachments { get; set; }
         public String Language { get; set; }
+        public String RoomNumber { get; set; }
+        public String AppointmentTime { get; set; }
     }
 }
