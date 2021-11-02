@@ -229,6 +229,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
         {
             try
             {
+                FinanceService finance = new FinanceService(_dbContext);
+
                 if (model is not null)
                 {
                     var appCount = _dbContext.AppointmentInfo.Where(x => x.AppointmentId == model.AppointmentId && x.isDeleted == null).Count();
@@ -258,7 +260,21 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         _dbContext.AppointmentInfo.Add(appInfo);
                         _dbContext.SaveChanges();
 
-                        //sendEmailToTranslator(model.TranslatorId, model.Attachments);
+                        FinanceViewModel fin = new FinanceViewModel();
+
+                        //Payable leg
+                        fin.AppointmentId = model.Id;
+                        fin.Status = "ACTIVE";
+                        fin.Type = "P";
+                        finance.Create(fin);
+
+                        //Receivable leg
+                        fin.AppointmentId = model.Id;
+                        fin.Status = "ACTIVE";
+                        fin.Type = "R";
+                        finance.Create(fin);
+
+                        //sendEmailoTranslator(model.TranslatorId, model.Attachments);
 
                         return Json(new { appointment = appInfo, success = true, message = "Appointment created successfully" });
                     }
