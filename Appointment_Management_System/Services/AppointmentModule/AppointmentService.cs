@@ -263,13 +263,13 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         FinanceViewModel fin = new FinanceViewModel();
 
                         //Payable leg
-                        fin.AppointmentId = model.Id;
+                        fin.AppointmentId = model.AppointmentId;
                         fin.Status = "ACTIVE";
                         fin.Type = "P";
                         finance.Create(fin);
 
                         //Receivable leg
-                        fin.AppointmentId = model.Id;
+                        fin.AppointmentId = model.AppointmentId;
                         fin.Status = "ACTIVE";
                         fin.Type = "R";
                         finance.Create(fin);
