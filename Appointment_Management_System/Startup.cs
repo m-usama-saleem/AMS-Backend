@@ -53,7 +53,7 @@ namespace Appointment_Management_System
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder => builder.WithOrigins("http://localhost:3000")
+            app.UseCors(builder => builder.WithOrigins("http://localhost:3000", "http://localhost:8010", "http://NOUMANQURESHI:8010")
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
