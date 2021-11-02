@@ -260,22 +260,6 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         _dbContext.AppointmentInfo.Add(appInfo);
                         _dbContext.SaveChanges();
 
-                        FinanceViewModel fin = new FinanceViewModel();
-
-                        //Payable leg
-                        fin.AppointmentId = model.AppointmentId;
-                        fin.Status = "ACTIVE";
-                        fin.Type = "P";
-                        finance.Create(fin);
-
-                        //Receivable leg
-                        fin.AppointmentId = model.AppointmentId;
-                        fin.Status = "ACTIVE";
-                        fin.Type = "R";
-                        finance.Create(fin);
-
-                        //sendEmailoTranslator(model.TranslatorId, model.Attachments);
-
                         return Json(new { appointment = appInfo, success = true, message = "Appointment created successfully" });
                     }
                     else
