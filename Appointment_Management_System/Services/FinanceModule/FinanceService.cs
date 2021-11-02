@@ -16,10 +16,23 @@ namespace Appointment_Management_System.Services.FinanceModule
     public class FinanceService : Controller, IFinanceService
     {
         private readonly DatabaseContext _dbContext;
+        Dictionary<string, string> MonthNames = new Dictionary<string, string>();
 
         public FinanceService(DatabaseContext databaseContext)
         {
             _dbContext = databaseContext;
+            MonthNames.Add("January", "Januar");
+            MonthNames.Add("February", "Februar");
+            MonthNames.Add("March", "März");
+            MonthNames.Add("April", "April");
+            MonthNames.Add("May", "Mai");
+            MonthNames.Add("June", "Juni");
+            MonthNames.Add("July", "Juli");
+            MonthNames.Add("August", "August");
+            MonthNames.Add("September", "September");
+            MonthNames.Add("October", "Oktober");
+            MonthNames.Add("November", "November");
+            MonthNames.Add("December", "Dezember");
         }
 
         public List<FinanceViewModel> GetAll()
@@ -509,7 +522,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                 model.Add(new BarChartViewModel
                 {
                     name = "Complete Payables",
-                    type = new DateTime(2020, pay.Key, 1).ToString("MMMM"),
+                    type = MonthNames[new DateTime(2020, pay.Key, 1).ToString("MMMM")].ToString(),
                     value1 = completed_writing.Count(),
                     value2 = completed_speaking.Count()
                 });
@@ -524,7 +537,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
             var finance = (from fin in _dbContext.Finance
                            join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
-                           where fin.isDeleted == null && fin.Status != "Completed" && fin.Type == "P"
+                           where fin.isDeleted == null && fin.Status == "Pending" && fin.Type == "P"
                            select new
                            {
                                Appointment = app,
@@ -539,7 +552,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                 model.Add(new BarChartViewModel
                 {
                     name = "Incomplete Payables",
-                    type = new DateTime(2020, pay.Key, 1).ToString("MMMM"),
+                    type = MonthNames[new DateTime(2020, pay.Key, 1).ToString("MMMM")].ToString(),
                     value1 = completed_writing.Count(),
                     value2 = completed_speaking.Count()
                 });
@@ -569,7 +582,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                 model.Add(new BarChartViewModel
                 {
                     name = "Complete Receivable",
-                    type = new DateTime(2020, pay.Key, 1).ToString("MMMM"),
+                    type = MonthNames[new DateTime(2020, pay.Key, 1).ToString("MMMM")].ToString(),
                     value1 = completed_writing.Count(),
                     value2 = completed_speaking.Count()
                 });
@@ -584,7 +597,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
             var finance = (from fin in _dbContext.Finance
                            join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
-                           where fin.isDeleted == null && fin.Status != "Completed" && fin.Type == "R"
+                           where fin.isDeleted == null && fin.Status == "Pending" && fin.Type == "R"
                            select new
                            {
                                Appointment = app,
@@ -599,7 +612,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                 model.Add(new BarChartViewModel
                 {
                     name = "Incomplete Receivables",
-                    type = new DateTime(2020, pay.Key, 1).ToString("MMMM"),
+                    type = MonthNames[new DateTime(2020, pay.Key, 1).ToString("MMMM")].ToString(),
                     value1 = completed_writing.Count(),
                     value2 = completed_speaking.Count()
                 });
