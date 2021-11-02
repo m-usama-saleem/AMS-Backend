@@ -13,6 +13,7 @@ namespace Appointment_Management_System.ViewModels.FinanceModule
         public String AppointmentType { get; set; }
         public String AppointmentDate { get; set; }
         public String AppointmentInstitute { get; set; }
+        public String InstituteAddress { get; set; }
         public String AppointmentTranslator { get; set; }
         public String AppointmentLanguage { get; set; }
         public String Status { get; set; }
@@ -37,6 +38,11 @@ namespace Appointment_Management_System.ViewModels.FinanceModule
         public Decimal NetPayment { get; set; }
         public Int64 CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime ApprovalDate { get; set; }
+        public Int64 ApprovalBy { get; set; }
+
+        public DateTime CompletionDate { get; set; }
+        public Int64 CompletionBy { get; set; }
         public String isDeleted { get; set; }
     }
 }

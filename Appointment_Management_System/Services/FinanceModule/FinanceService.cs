@@ -30,7 +30,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             finance.ForEach(x =>
             {
                 var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
-                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId)).Name;
+                var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId));
                 var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == appointment.TranslatorId));
 
                 model.Add(new FinanceViewModel
@@ -39,7 +39,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                     AppointmentId_Fk = x.AppointmentId,
                     AppointmentId = appointment.AppointmentId,
                     AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
-                    AppointmentInstitute = insName,
+                    AppointmentInstitute = institute.Name,
+                    InstituteAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
                     AppointmentTranslator = traName.FirstName + " " + traName.LastName,
                     AppointmentLanguage = appointment.Language,
                     AppointmentType = appointment.Type,
@@ -64,7 +65,12 @@ namespace Appointment_Management_System.Services.FinanceModule
                     TicketCost = x.TicketCost,
                     isDeleted = x.isDeleted,
                     CreatedBy = x.CreatedBy,
-                    Attachments = x.Attachments
+                    Attachments = x.Attachments,
+                    ApprovalBy = x.ApprovalBy,
+                    ApprovalDate = x.ApprovalDate,
+                    CompletionDate = x.CompletionDate,
+                    CompletionBy = x.CompletionBy,
+                    CreatedAt = x.CreatedAt
                 });
             });
             return model;
@@ -81,7 +87,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             finance.ForEach(x =>
             {
                 var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
-                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId)).Name;
+                var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId));
                 var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == appointment.TranslatorId));
 
                 model.Add(new FinanceViewModel
@@ -90,7 +96,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                     AppointmentId_Fk = x.AppointmentId,
                     AppointmentId = appointment.AppointmentId,
                     AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
-                    AppointmentInstitute = insName,
+                    AppointmentInstitute = institute.Name,
+                    InstituteAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
                     AppointmentTranslator = traName.FirstName + " " + traName.LastName,
                     AppointmentLanguage = appointment.Language,
                     AppointmentType = appointment.Type,
@@ -115,7 +122,12 @@ namespace Appointment_Management_System.Services.FinanceModule
                     TicketCost = x.TicketCost,
                     isDeleted = x.isDeleted,
                     CreatedBy = x.CreatedBy,
-                    Attachments = x.Attachments
+                    Attachments = x.Attachments,
+                    ApprovalBy = x.ApprovalBy,
+                    ApprovalDate = x.ApprovalDate,
+                    CompletionDate = x.CompletionDate,
+                    CompletionBy = x.CompletionBy,
+                    CreatedAt = x.CreatedAt
                 });
             });
             return model;
@@ -130,7 +142,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             finance.ForEach(x =>
             {
                 var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
-                var insName = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId)).Name;
+                var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == appointment.InstitutionId));
                 var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == appointment.TranslatorId));
 
                 model.Add(new FinanceViewModel
@@ -139,7 +151,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                     AppointmentId_Fk = x.AppointmentId,
                     AppointmentId = appointment.AppointmentId,
                     AppointmentDate = appointment.AppointmentDate.ToShortDateString(),
-                    AppointmentInstitute = insName,
+                    AppointmentInstitute = institute.Name,
+                    InstituteAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
                     AppointmentTranslator = traName.FirstName + " " + traName.LastName,
                     AppointmentLanguage = appointment.Language,
                     AppointmentType = appointment.Type,
@@ -164,7 +177,12 @@ namespace Appointment_Management_System.Services.FinanceModule
                     TicketCost = x.TicketCost,
                     isDeleted = x.isDeleted,
                     CreatedBy = x.CreatedBy,
-                    Attachments = x.Attachments
+                    Attachments = x.Attachments,
+                    ApprovalBy = x.ApprovalBy,
+                    ApprovalDate = x.ApprovalDate,
+                    CompletionDate = x.CompletionDate,
+                    CompletionBy = x.CompletionBy,
+                    CreatedAt = x.CreatedAt
                 });
             });
             return model;
@@ -241,7 +259,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                     if (fin is not null)
                     {
                         fin.Status = "Approved";
-
+                        fin.ApprovalDate = DateTime.Now;
+                        fin.ApprovalBy = model.userId;
 
                         _dbContext.Entry(fin).State = EntityState.Modified;
                         var result = _dbContext.SaveChanges();
@@ -256,11 +275,15 @@ namespace Appointment_Management_System.Services.FinanceModule
                                 foreach (var item in app)
                                 {
                                     item.Status = "Completed";
+                                    item.CompletionDate = DateTime.Now;
+                                    item.CompletionBy = model.userId;
                                     _dbContext.Entry(item).State = EntityState.Modified;
                                 }
 
                                 var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
                                 appointment.Status = "Completed";
+                                appointment.CompletionDate = DateTime.Now;
+                                appointment.CompletionBy = model.userId;
 
                                 _dbContext.Entry(appointment).State = EntityState.Modified;
                                 _dbContext.SaveChanges();
@@ -307,6 +330,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                         if (fin is not null)
                         {
                             fin.Status = "Approved";
+                            fin.ApprovalDate = DateTime.Now;
+                            fin.ApprovalBy = model.userId;
 
                             _dbContext.Entry(fin).State = EntityState.Modified;
                             var result = _dbContext.SaveChanges();
@@ -322,11 +347,16 @@ namespace Appointment_Management_System.Services.FinanceModule
                                     foreach (var item in app)
                                     {
                                         item.Status = "Completed";
+                                        item.CompletionDate = DateTime.Now;
+                                        item.CompletionBy = model.userId;
+
                                         _dbContext.Entry(item).State = EntityState.Modified;
                                     }
 
                                     var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
                                     appointment.Status = "Completed";
+                                    appointment.CompletionDate = DateTime.Now;
+                                    appointment.CompletionBy = model.userId;
 
                                     _dbContext.Entry(appointment).State = EntityState.Modified;
                                     _dbContext.SaveChanges();
@@ -469,7 +499,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                            {
                                Appointment = app,
                                Payable = fin,
-                           }).ToList().GroupBy(x => x.Appointment.AppointmentDate.Month).ToList();
+                           }).ToList().GroupBy(x => x.Payable.CompletionDate.Month).ToList();
 
             foreach (var pay in finance)
             {
@@ -499,7 +529,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                            {
                                Appointment = app,
                                Payable = fin,
-                           }).ToList().GroupBy(x => x.Appointment.AppointmentDate.Month).ToList();
+                           }).ToList().GroupBy(x => x.Payable.CreatedAt.Month).ToList();
 
             foreach (var pay in finance)
             {
@@ -529,7 +559,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                            {
                                Appointment = app,
                                Payable = fin,
-                           }).ToList().GroupBy(x => x.Appointment.AppointmentDate.Month).ToList();
+                           }).ToList().GroupBy(x => x.Payable.CompletionDate.Month).ToList();
 
             foreach (var pay in finance)
             {
@@ -559,7 +589,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                            {
                                Appointment = app,
                                Payable = fin,
-                           }).ToList().GroupBy(x => x.Appointment.AppointmentDate.Month).ToList();
+                           }).ToList().GroupBy(x => x.Payable.CreatedAt.Month).ToList();
 
             foreach (var pay in finance)
             {
