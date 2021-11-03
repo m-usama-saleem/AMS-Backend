@@ -46,11 +46,15 @@ namespace Appointment_Management_System.Services.AppointmentModule
                 {
                     Id = x.Id,
                     AppointmentId = x.AppointmentId,
+
                     TranslatorId = x.TranslatorId,
                     TranslatorName = traName.FirstName + " " + traName.LastName,
+                    TranslatorAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
+
                     InstitutionId = x.InstitutionId,
                     InstitutionName = institute.Name,
-                    InstitutionAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
+                    InstitutionAddress = institute.Address + " " + institute.Postcode + " " + institute.City,
+
                     Type = x.Type,
                     EntryDate = x.EntryDate,
                     AppointmentDate = x.AppointmentDate,

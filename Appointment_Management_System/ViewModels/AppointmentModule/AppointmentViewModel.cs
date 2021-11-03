@@ -11,6 +11,7 @@ namespace Appointment_Management_System.ViewModels.AppointmentModule
         public String AppointmentId { get; set; }
         public Int64 TranslatorId { get; set; }
         public String TranslatorName { get; set; }
+        public String TranslatorAddress { get; set; }
         public Int64 InstitutionId { get; set; }
         public Int64 CreatedBy { get; set; }
         public String InstitutionName { get; set; }
