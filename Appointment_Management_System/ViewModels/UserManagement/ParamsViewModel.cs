@@ -9,5 +9,6 @@ namespace Appointment_Management_System.ViewModels.UserManagement
     {
         public long id { get; set; }
         public long userId { get; set; }
+        public string text { get; set; }
     }
 }

@@ -63,7 +63,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     Hours = x.Hours,
                     Discount = x.Discount,
                     NetPayment = x.NetPayment,
-                    Status = x.Status,
+                    Status = x.AppointmentDate < DateTime.Now ? "Date Passed" : x.Status,
                     IsDeleted = x.isDeleted,
                     Attachments = x.Attachments,
                     Language = x.Language,
@@ -402,6 +402,9 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     if (app is not null)
                     {
                         app.isDeleted = "Y";
+                        app.DeletedBy = model.userId;
+                        app.DeletedDate = DateTime.Now;
+                        app.DeletedReason = !string.IsNullOrEmpty(model.text) ? model.text : "";
 
                         var fin = _dbContext.Finance.Where(x => x.AppointmentId == app.Id && x.isDeleted == null).ToList();
                         foreach (var item in fin)

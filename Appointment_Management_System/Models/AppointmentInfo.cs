@@ -48,6 +48,9 @@ namespace Appointment_Management_System.Models
 
         public DateTime CompletionDate { get; set; }
         public Int64 CompletionBy { get; set; }
+        public DateTime DeletedDate { get; set; }
+        public Int64 DeletedBy { get; set; }
+        public String DeletedReason { get; set; }
 
         public Decimal Tax { get; set; }
         public Decimal Rate { get; set; }
