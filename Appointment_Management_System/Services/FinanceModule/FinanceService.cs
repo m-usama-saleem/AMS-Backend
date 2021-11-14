@@ -94,7 +94,7 @@ namespace Appointment_Management_System.Services.FinanceModule
         {
             List<FinanceViewModel> model = new List<FinanceViewModel>();
 
-            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P" && x.Status != "Completed")
+            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P" && x.Status != "abgeschlossen")
                             .OrderByDescending(x => x.CreatedAt).ToList();
 
             finance.ForEach(x =>
@@ -150,7 +150,7 @@ namespace Appointment_Management_System.Services.FinanceModule
         {
             List<FinanceViewModel> model = new List<FinanceViewModel>();
 
-            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "R" && x.Status != "Completed")
+            var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "R" && x.Status != "abgeschlossen")
                             .OrderByDescending(x => x.CreatedAt).ToList();
             finance.ForEach(x =>
             {
@@ -271,7 +271,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                     var fin = _dbContext.Finance.SingleOrDefault(x => x.Id == model.id && x.isDeleted == null);
                     if (fin is not null)
                     {
-                        fin.Status = "Approved";
+                        fin.Status = "bestätigt";
                         fin.ApprovalDate = DateTime.Now;
                         fin.ApprovalBy = model.userId;
 
@@ -280,21 +280,21 @@ namespace Appointment_Management_System.Services.FinanceModule
                         if (result > 0)
                         {
                             var app = _dbContext.Finance.Where(x => x.AppointmentId == fin.AppointmentId &&
-                                               x.Status == "Approved" &&
+                                               x.Status == "bestätigt" &&
                                                x.isDeleted == null).ToList();
 
                             if (app.Count() == 2) //both legs approved then mark status completed
                             {
                                 foreach (var item in app)
                                 {
-                                    item.Status = "Completed";
+                                    item.Status = "abgeschlossen";
                                     item.CompletionDate = DateTime.Now;
                                     item.CompletionBy = model.userId;
                                     _dbContext.Entry(item).State = EntityState.Modified;
                                 }
 
                                 var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
-                                appointment.Status = "Completed";
+                                appointment.Status = "abgeschlossen";
                                 appointment.CompletionDate = DateTime.Now;
                                 appointment.CompletionBy = model.userId;
 
@@ -304,7 +304,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                             else
                             {
                                 var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
-                                appointment.Status = "PartiallyCompleted";
+                                appointment.Status = "teilweise abgeschlossen";
 
                                 _dbContext.Entry(appointment).State = EntityState.Modified;
                                 _dbContext.SaveChanges();
@@ -342,7 +342,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                         var fin = _dbContext.Finance.SingleOrDefault(x => x.Id == model.id && x.isDeleted == null);
                         if (fin is not null)
                         {
-                            fin.Status = "Approved";
+                            fin.Status = "bestätigt";
                             fin.ApprovalDate = DateTime.Now;
                             fin.ApprovalBy = model.userId;
 
@@ -352,14 +352,14 @@ namespace Appointment_Management_System.Services.FinanceModule
                             {
                                 aprovedList.Add(model.id);
                                 var app = _dbContext.Finance.Where(x => x.AppointmentId == fin.AppointmentId &&
-                                                   x.Status == "Approved" &&
+                                                   x.Status == "bestätigt" &&
                                                    x.isDeleted == null).ToList();
 
                                 if (app.Count() == 2) //both legs approved then mark status completed
                                 {
                                     foreach (var item in app)
                                     {
-                                        item.Status = "Completed";
+                                        item.Status = "abgeschlossen";
                                         item.CompletionDate = DateTime.Now;
                                         item.CompletionBy = model.userId;
 
@@ -367,7 +367,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                                     }
 
                                     var appointment = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == fin.AppointmentId && x.isDeleted == null);
-                                    appointment.Status = "Completed";
+                                    appointment.Status = "abgeschlossen";
                                     appointment.CompletionDate = DateTime.Now;
                                     appointment.CompletionBy = model.userId;
 
@@ -507,7 +507,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
             var finance = (from fin in _dbContext.Finance
                            join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
-                           where fin.isDeleted == null && fin.Status == "Completed" && fin.Type == "P"
+                           where fin.isDeleted == null && fin.Status == "abgeschlossen" && fin.Type == "P"
                            select new
                            {
                                Appointment = app,
@@ -537,7 +537,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
             var finance = (from fin in _dbContext.Finance
                            join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
-                           where fin.isDeleted == null && fin.Status == "Pending" && fin.Type == "P"
+                           where fin.isDeleted == null && fin.Status == "Ausstehend" && fin.Type == "P"
                            select new
                            {
                                Appointment = app,
@@ -567,7 +567,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
             var finance = (from fin in _dbContext.Finance
                            join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
-                           where fin.isDeleted == null && fin.Status != "Completed" && fin.Type == "R"
+                           where fin.isDeleted == null && fin.Status != "abgeschlossen" && fin.Type == "R"
                            select new
                            {
                                Appointment = app,
@@ -597,7 +597,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             //var finance = _dbContext.Finance.Where(x => x.isDeleted == null && x.Type == "P").ToList();
             var finance = (from fin in _dbContext.Finance
                            join app in _dbContext.AppointmentInfo on fin.AppointmentId equals app.Id
-                           where fin.isDeleted == null && fin.Status == "Pending" && fin.Type == "R"
+                           where fin.isDeleted == null && fin.Status == "Ausstehend" && fin.Type == "R"
                            select new
                            {
                                Appointment = app,

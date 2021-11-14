@@ -16,7 +16,7 @@ namespace Appointment_Management_System.Models
         [Required(AllowEmptyStrings = false)]
         public Int64 AppointmentId { get; set; }
 
-        [MaxLength(20)]
+        [MaxLength(25)]
         [Required(AllowEmptyStrings = false)]
         public String Status { get; set; }
 

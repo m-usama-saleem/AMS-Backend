@@ -36,7 +36,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
         public List<AppointmentViewModel> GetAllIncomplete()
         {
             List<AppointmentViewModel> model = new List<AppointmentViewModel>();
-            var appointments = _dbContext.AppointmentInfo.Where(x => x.isDeleted == null && x.Status != "Completed").ToList();
+            var appointments = _dbContext.AppointmentInfo.Where(x => x.isDeleted == null && x.Status != "abgeschlossen").ToList();
             appointments.ForEach(x =>
             {
                 var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId));
@@ -196,29 +196,29 @@ namespace Appointment_Management_System.Services.AppointmentModule
             List<PieChartViewModel> model = new List<PieChartViewModel>();
             var appointments = _dbContext.AppointmentInfo.ToList();
 
-            var pending = appointments.Where(x => x.Status == "Pending");
-            var completed = appointments.Where(x => x.Status == "Completed");
-            var p_completed = appointments.Where(x => x.Status == "PartiallyCompleted");
-            var approved = appointments.Where(x => x.Status == "Approved");
+            var pending = appointments.Where(x => x.Status == "Ausstehend");
+            var completed = appointments.Where(x => x.Status == "abgeschlossen");
+            var p_completed = appointments.Where(x => x.Status == "teilweise abgeschlossen");
+            var approved = appointments.Where(x => x.Status == "bestätigt");
 
             model.Add(new PieChartViewModel
             {
-                name = "Pending",
+                name = "Ausstehend",
                 value = pending.Count()
             });
             model.Add(new PieChartViewModel
             {
-                name = "Completed",
+                name = "abgeschlossen",
                 value = completed.Count()
             });
             model.Add(new PieChartViewModel
             {
-                name = "Partially Completed",
+                name = "teilweise abgeschlossen",
                 value = p_completed.Count()
             });
             model.Add(new PieChartViewModel
             {
-                name = "Approved",
+                name = "bestätigt",
                 value = approved.Count()
             });
             return model;
@@ -252,7 +252,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                             Rate = model.Rate,
                             Hours = model.Hours,
                             Discount = model.Discount,
-                            Status = "Pending",
+                            Status = "Ausstehend",
                             NetPayment = ((model.Rate * model.Hours) + model.Tax - model.Discount),
                             CreatedBy = model.CreatedBy,
                             Attachments = model.Attachments,
@@ -348,7 +348,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     var app = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == model.id && x.isDeleted == null);
                     if (app is not null)
                     {
-                        app.Status = "Approved";
+                        app.Status = "bestätigt";
                         app.ApprovalDate = DateTime.Now;
                         app.ApprovalBy = model.userId;
 
@@ -356,7 +356,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
 
                         //Payable leg
                         fin.AppointmentId_Fk = app.Id;
-                        fin.Status = "Pending";
+                        fin.Status = "Ausstehend";
                         fin.Type = "P";
                         fin.Tax = 19;
                         fin.CreatedBy = model.userId;
@@ -365,7 +365,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
 
                         //Receivable leg
                         fin.AppointmentId_Fk = app.Id;
-                        fin.Status = "Pending";
+                        fin.Status = "Ausstehend";
                         fin.Type = "R";
                         fin.Tax = 19;
                         fin.CreatedBy = model.userId;
