@@ -44,5 +44,6 @@ namespace Appointment_Management_System.ViewModels.FinanceModule
         public DateTime CompletionDate { get; set; }
         public Int64 CompletionBy { get; set; }
         public String isDeleted { get; set; }
+        public String InvoiceID { get; set; }
     }
 }

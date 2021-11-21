@@ -36,7 +36,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
         public List<AppointmentViewModel> GetAllIncomplete()
         {
             List<AppointmentViewModel> model = new List<AppointmentViewModel>();
-            var appointments = _dbContext.AppointmentInfo.Where(x => x.isDeleted == null && x.Status != "abgeschlossen").ToList();
+            var appointments = _dbContext.AppointmentInfo.Where(x => x.isDeleted == null && x.Status != "abgeschlossen").OrderByDescending(x => x.EntryDate).ToList();
             appointments.ForEach(x =>
             {
                 var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId));
@@ -63,7 +63,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     Hours = x.Hours,
                     Discount = x.Discount,
                     NetPayment = x.NetPayment,
-                    Status = x.AppointmentDate < DateTime.Now ? "Date Passed" : x.Status,
+                    Status = x.AppointmentDate < DateTime.Now  && 
+                    (!x.Status.Equals("Ausstehend") || !x.Status.Equals("abgeschlossen")) ? "verunsichert" : x.Status,
                     IsDeleted = x.isDeleted,
                     Attachments = x.Attachments,
                     Language = x.Language,
@@ -73,7 +74,12 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     CompletionDate = x.CompletionDate,
                     CreatedBy = x.CreatedBy,
                     AppointmentTime = x.AppointmentTime,
-                    RoomNumber = x.RoomNumber
+                    RoomNumber = x.RoomNumber,
+                    Remarks = x.Remarks,
+                    InvoiceID = x.InvoiceID,
+                    DeletedReason = x.DeletedReason,
+                    DeletedBy = x.DeletedBy,
+                    DeletedDate = x.DeletedDate
                 });
             });
             return model;
@@ -81,7 +87,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
         public List<AppointmentDetailViewModel> GetAll()
         {
             List<AppointmentDetailViewModel> model = new List<AppointmentDetailViewModel>();
-            var appointments = _dbContext.AppointmentInfo.ToList();
+            var appointments = _dbContext.AppointmentInfo.OrderByDescending(x => x.EntryDate).ToList();
             appointments.ForEach(x =>
             {
                 var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId));
@@ -109,7 +115,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         Hours = x.Hours,
                         Discount = x.Discount,
                         NetPayment = x.NetPayment,
-                        Status = x.Status,
+                        Status = x.AppointmentDate < DateTime.Now &&
+                    (!x.Status.Equals("Ausstehend") || !x.Status.Equals("abgeschlossen")) ? "verunsichert" : x.Status,
                         IsDeleted = x.isDeleted,
                         Attachments = x.Attachments,
                         Language = x.Language,
@@ -118,7 +125,12 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         CompletionBy = x.CompletionBy,
                         CompletionDate = x.CompletionDate,
                         AppointmentTime = x.AppointmentTime,
-                        RoomNumber = x.RoomNumber
+                        RoomNumber = x.RoomNumber,
+                        Remarks = x.Remarks,
+                        InvoiceID = x.InvoiceID,
+                        DeletedReason = x.DeletedReason,
+                        DeletedBy = x.DeletedBy,
+                        DeletedDate = x.DeletedDate
                     },
                     Payable = pay == null ? new FinanceViewModel() : new FinanceViewModel
                     {
@@ -258,7 +270,9 @@ namespace Appointment_Management_System.Services.AppointmentModule
                             Attachments = model.Attachments,
                             Language = model.Language,
                             AppointmentTime = model.AppointmentTime,
-                            RoomNumber = model.RoomNumber
+                            RoomNumber = model.RoomNumber,
+                            Remarks = model.Remarks,
+                            InvoiceID = model.InvoiceID
                         };
 
                         _dbContext.AppointmentInfo.Add(appInfo);
@@ -306,6 +320,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         app.Language = model.Language;
                         app.AppointmentTime = model.AppointmentTime;
                         app.RoomNumber = model.RoomNumber;
+                        app.Remarks = model.Remarks;
+                        app.InvoiceID = model.InvoiceID;
 
                         if (!string.IsNullOrEmpty(model.Attachments))
                         {

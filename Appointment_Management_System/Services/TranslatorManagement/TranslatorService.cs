@@ -23,7 +23,7 @@ namespace Appointment_Management_System.Services.TranslatorManagement
         #region Get 
         public List<Translators> GetAll()
         {
-            return _dbContext.Translators.Where(x => x.isDeleted == null).ToList();
+            return _dbContext.Translators.Where(x => x.isDeleted == null).OrderByDescending(x => x.CreatedAt).ToList();
         }
 
         #endregion

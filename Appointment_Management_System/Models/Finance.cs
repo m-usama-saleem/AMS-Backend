@@ -56,5 +56,8 @@ namespace Appointment_Management_System.Models
         public Int64 CompletionBy { get; set; }
         [MaxLength(1)]
         public String isDeleted { get; set; }
+        
+        [MaxLength(25)]
+        public String InvoiceID { get; set; }
     }
 }

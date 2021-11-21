@@ -38,5 +38,7 @@ namespace Appointment_Management_System.ViewModels.AppointmentModule
         public String Language { get; set; }
         public String RoomNumber { get; set; }
         public String AppointmentTime { get; set; }
+        public String Remarks { get; set; }
+        public String InvoiceID { get; set; }
     }
 }

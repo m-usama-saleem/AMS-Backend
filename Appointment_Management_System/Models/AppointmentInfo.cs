@@ -58,6 +58,10 @@ namespace Appointment_Management_System.Models
         public Decimal Discount { get; set; }
         public Decimal NetPayment { get; set; }
 
+        [MaxLength(500)]
+        public String Remarks { get; set; }
+        [MaxLength(25)]
+        public String InvoiceID { get; set; }
 
         [Required(AllowEmptyStrings = false)]
         public Int64 CreatedBy { get; set; }

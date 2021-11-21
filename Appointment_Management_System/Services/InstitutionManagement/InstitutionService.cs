@@ -22,7 +22,7 @@ namespace Appointment_Management_System.Services.InstitutionManagement
         #region Get 
         public List<Institutions> GetAll()
         {
-            return _dbContext.Institutions.Where(x => x.isDeleted == null).ToList();
+            return _dbContext.Institutions.Where(x => x.isDeleted == null).OrderByDescending(x => x.CreatedAt).ToList();
         }
 
         #endregion

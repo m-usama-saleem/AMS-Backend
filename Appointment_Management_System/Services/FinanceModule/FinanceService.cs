@@ -39,7 +39,7 @@ namespace Appointment_Management_System.Services.FinanceModule
         {
             List<FinanceViewModel> model = new List<FinanceViewModel>();
 
-            var finance = _dbContext.Finance.Where(x => x.isDeleted == null).ToList();
+            var finance = _dbContext.Finance.Where(x => x.isDeleted == null).OrderByDescending(x => x.CreatedAt).ToList();
             finance.ForEach(x =>
             {
                 var appointment = _dbContext.AppointmentInfo.FirstOrDefault((y => y.Id == x.AppointmentId));
@@ -83,7 +83,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                     ApprovalDate = x.ApprovalDate,
                     CompletionDate = x.CompletionDate,
                     CompletionBy = x.CompletionBy,
-                    CreatedAt = x.CreatedAt
+                    CreatedAt = x.CreatedAt,
+                    InvoiceID = x.InvoiceID
                 });
             });
             return model;
@@ -140,7 +141,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                     ApprovalDate = x.ApprovalDate,
                     CompletionDate = x.CompletionDate,
                     CompletionBy = x.CompletionBy,
-                    CreatedAt = x.CreatedAt
+                    CreatedAt = x.CreatedAt,
+                    InvoiceID = x.InvoiceID
                 });
             });
             return model;
@@ -195,7 +197,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                     ApprovalDate = x.ApprovalDate,
                     CompletionDate = x.CompletionDate,
                     CompletionBy = x.CompletionBy,
-                    CreatedAt = x.CreatedAt
+                    CreatedAt = x.CreatedAt,
+                    InvoiceID = x.InvoiceID
                 });
             });
             return model;
@@ -206,6 +209,13 @@ namespace Appointment_Management_System.Services.FinanceModule
         {
             try
             {
+                var str_id = _dbContext.Finance.OrderByDescending(x => x.Id).FirstOrDefault().InvoiceID;
+                var id = 0;
+                if (!string.IsNullOrEmpty(str_id))
+                {
+                    id = Convert.ToInt32(str_id);
+                }
+
                 if (model is not null)
                 {
                     Finance finance = new Finance()
@@ -232,7 +242,8 @@ namespace Appointment_Management_System.Services.FinanceModule
                         TicketCost = model.TicketCost,
                         NetPayment = model.NetPayment,
                         CreatedAt = DateTime.Now,
-                        CreatedBy = model.CreatedBy
+                        CreatedBy = model.CreatedBy,
+                        InvoiceID = id + 1 + ""
                     };
 
                     _dbContext.Finance.Add(finance);

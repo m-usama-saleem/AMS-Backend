@@ -22,7 +22,7 @@ namespace Appointment_Management_System.Services.UserManagement
         #region Get 
         public List<AppUsers> GetAll()
         {
-            return _dbContext.AppUsers.Where(x => x.isDeleted == null).ToList();
+            return _dbContext.AppUsers.Where(x => x.isDeleted == null).OrderByDescending(x => x.CreatedAt).ToList();
         }
 
         #endregion
