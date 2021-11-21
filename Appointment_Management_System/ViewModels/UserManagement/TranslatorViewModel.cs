@@ -16,7 +16,7 @@ namespace Appointment_Management_System.ViewModels.UserManagement
         public String Email { get; set; }
 
         [MaxLength(10)]
-        [Required(AllowEmptyStrings = false)]
+        //[Required(AllowEmptyStrings = false)]
         public String Type { get; set; }
         
         [MaxLength(128)]
