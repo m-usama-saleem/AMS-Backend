@@ -101,10 +101,10 @@ namespace Appointment_Management_System.Migrations
                     b.Property<long>("CreatedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("DeletedBy")
+                    b.Property<long?>("DeletedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("DeletedDate")
+                    b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedReason")

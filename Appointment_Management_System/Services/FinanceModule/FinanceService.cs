@@ -207,10 +207,16 @@ namespace Appointment_Management_System.Services.FinanceModule
         [HttpPost]
         public String Create([FromBody] FinanceViewModel model)
         {
+            String str_id = null;
             try
             {
-                var str_id = _dbContext.Finance.OrderByDescending(x => x.Id).FirstOrDefault().InvoiceID;
+                var fin = _dbContext.Finance.OrderByDescending(x => x.Id).FirstOrDefault();
                 var id = 0;
+
+                if (fin is not null)
+                {
+                    str_id = fin.InvoiceID;
+                }
                 if (!string.IsNullOrEmpty(str_id))
                 {
                     id = Convert.ToInt32(str_id);
@@ -601,7 +607,7 @@ namespace Appointment_Management_System.Services.FinanceModule
 
             return model;
         }
-         public List<BarChartViewModel> GetInCompletedReceivableStats()
+        public List<BarChartViewModel> GetInCompletedReceivableStats()
         {
             List<BarChartViewModel> model = new List<BarChartViewModel>();
 

@@ -26,15 +26,15 @@ namespace Appointment_Management_System.Models
         [MaxLength(20)]
         [Required(AllowEmptyStrings = false)]
         public String Type { get; set; }
-        
+
         [MaxLength(25)]
         [Required(AllowEmptyStrings = false)]
         public String Status { get; set; }
-        
+
         [MaxLength(100)]
         [Required(AllowEmptyStrings = false)]
         public String Language { get; set; }
-        
+
         [MaxLength(500)]
         public String Attachments { get; set; }
 
@@ -48,8 +48,8 @@ namespace Appointment_Management_System.Models
 
         public DateTime CompletionDate { get; set; }
         public Int64 CompletionBy { get; set; }
-        public DateTime DeletedDate { get; set; }
-        public Int64 DeletedBy { get; set; }
+        public System.Nullable<DateTime> DeletedDate { get; set; }
+        public System.Nullable<Int64> DeletedBy { get; set; }
         public String DeletedReason { get; set; }
 
         public Decimal Tax { get; set; }

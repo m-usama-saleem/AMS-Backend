@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Appointment_Management_System.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20211108091034_mig36")]
-    partial class mig36
+    [Migration("20211127135633_mig1")]
+    partial class mig1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -103,10 +103,10 @@ namespace Appointment_Management_System.Migrations
                     b.Property<long>("CreatedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("DeletedBy")
+                    b.Property<long?>("DeletedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("DeletedDate")
+                    b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedReason")
@@ -124,6 +124,10 @@ namespace Appointment_Management_System.Migrations
                     b.Property<long>("InstitutionId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("InvoiceID")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
                     b.Property<string>("Language")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -135,13 +139,17 @@ namespace Appointment_Management_System.Migrations
                     b.Property<decimal>("Rate")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("RoomNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<decimal>("Tax")
                         .HasColumnType("decimal(18,2)");
@@ -252,6 +260,10 @@ namespace Appointment_Management_System.Migrations
                     b.Property<decimal>("Hours")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("InvoiceID")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
                     b.Property<decimal>("NetPayment")
                         .HasColumnType("decimal(18,2)");
 
@@ -272,8 +284,8 @@ namespace Appointment_Management_System.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<decimal>("Tax")
                         .HasColumnType("decimal(18,2)");
