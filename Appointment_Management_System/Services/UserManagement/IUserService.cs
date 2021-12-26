@@ -16,7 +16,7 @@ namespace Appointment_Management_System.Services.UserManagement
         public List<AppUsers> GetAll();
         public JsonResult CreateUser(UserViewModel model);
         public JsonResult EditUser(UserViewModel model);
-        public JsonResult DeleteUser(UserViewModel model);
+        public JsonResult DeleteUser(ParamsViewModel model);
 
     }
 }

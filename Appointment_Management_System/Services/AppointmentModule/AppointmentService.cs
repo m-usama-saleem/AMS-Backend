@@ -49,7 +49,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
 
                     TranslatorId = x.TranslatorId,
                     TranslatorName = traName.FirstName + " " + traName.LastName,
-                    TranslatorAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
+                    TranslatorAddress = traName.Address + " \n " + traName.PostCode + " " + traName.City,
 
                     InstitutionId = x.InstitutionId,
                     InstitutionName = institute.Name,

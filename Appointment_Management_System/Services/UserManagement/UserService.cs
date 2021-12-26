@@ -22,7 +22,18 @@ namespace Appointment_Management_System.Services.UserManagement
         #region Get 
         public List<AppUsers> GetAll()
         {
-            return _dbContext.AppUsers.Where(x => x.isDeleted == null).OrderByDescending(x => x.CreatedAt).ToList();
+            try
+            {
+                return _dbContext.AppUsers.Where(x => x.isDeleted == null).OrderByDescending(x => x.CreatedAt).ToList();
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    throw new System.Exception(ex.InnerException.Message);
+                }
+                throw new System.Exception(ex.Message);
+            }
         }
 
         #endregion
@@ -92,11 +103,11 @@ namespace Appointment_Management_System.Services.UserManagement
                         _dbContext.AppUsers.Add(user);
                         _dbContext.SaveChanges();
 
-                        return Json(new {user, success = true, message = "User created successfully" });
+                        return Json(new { user, success = true, message = "User created successfully" });
                     }
                     else
                     {
-                        return Json(new { success = false, message = "User name already exists" });
+                        return Json(new { success = false, message = "Benutzername existiert bereits" });
                     }
                 }
                 else
@@ -117,19 +128,28 @@ namespace Appointment_Management_System.Services.UserManagement
             {
                 if (model is not null)
                 {
+
                     var user = _dbContext.AppUsers.Where(x => x.Id == model.Id && x.isDeleted == null).SingleOrDefault();
                     if (user is not null)
                     {
-                        user.Email = model.Email;
-                        user.Name = model.Name;
-                        user.Password = model.Password;
-                        user.Status = model.Status;
-                        user.Type = model.Type;
+                        var userCount = _dbContext.AppUsers.Where(x => x.Email == model.Email && x.isDeleted == null).Count();
+                        if (userCount == 0 || user.Email == model.Email)
+                        {
+                            user.Email = model.Email;
+                            user.Name = model.Name;
+                            user.Password = model.Password;
+                            user.Status = model.Status;
+                            user.Type = model.Type;
 
-                        _dbContext.Entry(user).State = EntityState.Modified;
-                        _dbContext.SaveChanges();
+                            _dbContext.Entry(user).State = EntityState.Modified;
+                            _dbContext.SaveChanges();
 
-                        return Json(new { success = true, message = "User updated successfully" });
+                            return Json(new { success = true, message = "User updated successfully" });
+                        }
+                        else
+                        {
+                            return Json(new { success = false, message = "Benutzername existiert bereits" });
+                        }
                     }
                     else
                     {
@@ -148,13 +168,13 @@ namespace Appointment_Management_System.Services.UserManagement
         }
 
         [HttpPost]
-        public JsonResult DeleteUser([FromBody] UserViewModel model)
+        public JsonResult DeleteUser([FromBody] ParamsViewModel model)
         {
             try
             {
                 if (model is not null)
                 {
-                    var user = _dbContext.AppUsers.Where(x => x.Id == model.Id && x.isDeleted == null).SingleOrDefault();
+                    var user = _dbContext.AppUsers.Where(x => x.Id == model.id && x.isDeleted == null).SingleOrDefault();
                     if (user is not null)
                     {
                         user.isDeleted = "Y";

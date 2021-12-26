@@ -1,3 +1,4 @@
+using Appointment_Management_System.Middleware;
 using Appointment_Management_System.Models;
 using Appointment_Management_System.Services;
 using Appointment_Management_System.Services.AppointmentModule;
@@ -52,7 +53,7 @@ namespace Appointment_Management_System
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseMiddleware(typeof(ExceptionHandlingMiddleware));
             app.UseCors(builder => builder.WithOrigins("http://localhost:3000", "http://localhost:8010", "http://NOUMANQURESHI:8010")
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
