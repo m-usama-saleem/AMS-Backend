@@ -39,8 +39,9 @@ namespace Appointment_Management_System.Services.AppointmentModule
             var appointments = _dbContext.AppointmentInfo.Where(x => x.isDeleted == null && x.Status != "abgeschlossen").OrderByDescending(x => x.EntryDate).ToList();
             appointments.ForEach(x =>
             {
-                var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId));
-                var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == x.TranslatorId));
+                var institute = _dbContext.Institutions.FirstOrDefault(y => y.Id == x.InstitutionId);
+                var traName = _dbContext.Translators.FirstOrDefault(y => y.Id == x.TranslatorId);
+                var finance = _dbContext.Finance.Where(y => y.AppointmentId == x.Id).ToList();
 
                 model.Add(new AppointmentViewModel
                 {
@@ -63,8 +64,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     Hours = x.Hours,
                     Discount = x.Discount,
                     NetPayment = x.NetPayment,
-                    Status = x.AppointmentDate < DateTime.Now  && 
-                    (!x.Status.Equals("Ausstehend") || !x.Status.Equals("abgeschlossen")) ? "verunsichert" : x.Status,
+                    Status = finance.Count > 0 ? x.AppointmentDate < DateTime.Now  && 
+                    (!x.Status.Equals("Ausstehend") || !x.Status.Equals("abgeschlossen")) ? "verunsichert" : x.Status : x.Status,
                     IsDeleted = x.isDeleted,
                     Attachments = x.Attachments,
                     Language = x.Language,
@@ -90,11 +91,12 @@ namespace Appointment_Management_System.Services.AppointmentModule
             var appointments = _dbContext.AppointmentInfo.OrderByDescending(x => x.EntryDate).ToList();
             appointments.ForEach(x =>
             {
-                var institute = _dbContext.Institutions.FirstOrDefault((y => y.Id == x.InstitutionId));
-                var traName = _dbContext.Translators.FirstOrDefault((y => y.Id == x.TranslatorId));
+                var institute = _dbContext.Institutions.FirstOrDefault(y => y.Id == x.InstitutionId);
+                var traName = _dbContext.Translators.FirstOrDefault(y => y.Id == x.TranslatorId);
+                var finance = _dbContext.Finance.Where(y => y.AppointmentId == x.Id).ToList();
 
-                var pay = _dbContext.Finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "P");
-                var rec = _dbContext.Finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "R");
+                var pay = finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "P") ?? new Finance();
+                var rec = finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "R") ?? new Finance();
 
                 model.Add(new AppointmentDetailViewModel
                 {
@@ -115,8 +117,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         Hours = x.Hours,
                         Discount = x.Discount,
                         NetPayment = x.NetPayment,
-                        Status = x.AppointmentDate < DateTime.Now &&
-                    (!x.Status.Equals("Ausstehend") || !x.Status.Equals("abgeschlossen")) ? "verunsichert" : x.Status,
+                        Status = finance.Count > 0 ?  x.AppointmentDate < DateTime.Now &&
+                    (!x.Status.Equals("Ausstehend") || !x.Status.Equals("abgeschlossen")) ? "verunsichert" : x.Status : x.Status,
                         IsDeleted = x.isDeleted,
                         Attachments = x.Attachments,
                         Language = x.Language,
@@ -765,6 +767,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
         }
 
         #endregion
+
     }
     public class FileData
     {

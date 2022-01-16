@@ -148,7 +148,7 @@ namespace Appointment_Management_System.Services.UserManagement
                         }
                         else
                         {
-                            return Json(new { success = false, message = "Benutzername existiert bereits" });
+                            return Json(new { success = false, message = "Benutzer-E-Mail existiert bereits" });
                         }
                     }
                     else
