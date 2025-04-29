@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Appointment_Management_System.Data;
 
 namespace Appointment_Management_System.Services.InstitutionManagement
 {
@@ -20,6 +21,8 @@ namespace Appointment_Management_System.Services.InstitutionManagement
         }
 
         #region Get 
+        
+        [HttpGet]
         public List<Institutions> GetAll()
         {
             return _dbContext.Institutions.Where(x => x.isDeleted == null).OrderByDescending(x => x.CreatedAt).ToList();

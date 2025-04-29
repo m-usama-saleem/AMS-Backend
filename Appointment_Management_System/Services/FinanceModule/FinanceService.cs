@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Appointment_Management_System.Data;
 
 namespace Appointment_Management_System.Services.FinanceModule
 {
@@ -15,10 +16,10 @@ namespace Appointment_Management_System.Services.FinanceModule
     [ApiController]
     public class FinanceService : Controller, IFinanceService
     {
-        private readonly DatabaseContext _dbContext;
+        private readonly IDatabaseContext _dbContext;
         Dictionary<string, string> MonthNames = new Dictionary<string, string>();
 
-        public FinanceService(DatabaseContext databaseContext)
+        public FinanceService(IDatabaseContext databaseContext)
         {
             _dbContext = databaseContext;
             MonthNames.Add("January", "Januar");
@@ -35,6 +36,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             MonthNames.Add("December", "Dezember");
         }
 
+        [HttpGet]
         public List<FinanceViewModel> GetAll()
         {
             List<FinanceViewModel> model = new List<FinanceViewModel>();
@@ -91,6 +93,7 @@ namespace Appointment_Management_System.Services.FinanceModule
 
         }
 
+        [HttpGet]
         public List<FinanceViewModel> GetAllPayables()
         {
             List<FinanceViewModel> model = new List<FinanceViewModel>();
@@ -148,6 +151,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             return model;
         }
 
+        [HttpGet]
         public List<FinanceViewModel> GetAllReceivables()
         {
             List<FinanceViewModel> model = new List<FinanceViewModel>();
@@ -278,6 +282,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                 //return Json(new { success = false, message = e.Message });
             }
         }
+        
         [HttpPost]
         public JsonResult Approve([FromBody] ParamsViewModel model)
         {
@@ -346,6 +351,7 @@ namespace Appointment_Management_System.Services.FinanceModule
                 return Json(new { success = false, message = e.Message });
             }
         }
+        
         [HttpPost]
         public JsonResult MultipleApprove([FromBody] List<ParamsViewModel> list)
         {
@@ -517,6 +523,7 @@ namespace Appointment_Management_System.Services.FinanceModule
             }
         }
 
+        [HttpGet]
         public List<BarChartViewModel> GetCompletedPayableStats()
         {
             List<BarChartViewModel> model = new List<BarChartViewModel>();
@@ -547,6 +554,8 @@ namespace Appointment_Management_System.Services.FinanceModule
 
             return model;
         }
+        
+        [HttpGet]
         public List<BarChartViewModel> GetInCompletedPayableStats()
         {
             List<BarChartViewModel> model = new List<BarChartViewModel>();
@@ -577,6 +586,8 @@ namespace Appointment_Management_System.Services.FinanceModule
 
             return model;
         }
+        
+        [HttpGet]
         public List<BarChartViewModel> GetCompletedReceivableStats()
         {
             List<BarChartViewModel> model = new List<BarChartViewModel>();
@@ -607,6 +618,8 @@ namespace Appointment_Management_System.Services.FinanceModule
 
             return model;
         }
+        
+        [HttpGet]
         public List<BarChartViewModel> GetInCompletedReceivableStats()
         {
             List<BarChartViewModel> model = new List<BarChartViewModel>();

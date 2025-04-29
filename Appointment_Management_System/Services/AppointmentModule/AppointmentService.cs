@@ -17,6 +17,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Appointment_Management_System.Data;
 
 namespace Appointment_Management_System.Services.AppointmentModule
 {
@@ -24,15 +25,18 @@ namespace Appointment_Management_System.Services.AppointmentModule
     [ApiController]
     public class AppointmentService : Controller, IAppointmentService
     {
-        private readonly DatabaseContext _dbContext;
-
-        public AppointmentService(DatabaseContext databaseContext)
+        private readonly IDatabaseContext _dbContext;
+        private readonly IFinanceService _financeService;
+        
+        public AppointmentService(IDatabaseContext databaseContext, IFinanceService financeService)
         {
             _dbContext = databaseContext;
+            _financeService = financeService;
         }
 
         #region Get
 
+        [HttpGet]
         public List<AppointmentViewModel> GetAllIncomplete()
         {
             List<AppointmentViewModel> model = new List<AppointmentViewModel>();
@@ -83,20 +87,23 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     DeletedDate = x.DeletedDate
                 });
             });
+            
             return model;
         }
+        
+        [HttpGet]
         public List<AppointmentDetailViewModel> GetAll()
         {
             List<AppointmentDetailViewModel> model = new List<AppointmentDetailViewModel>();
             var appointments = _dbContext.AppointmentInfo.OrderByDescending(x => x.EntryDate).ToList();
             appointments.ForEach(x =>
             {
-                var institute = _dbContext.Institutions.FirstOrDefault(y => y.Id == x.InstitutionId);
-                var traName = _dbContext.Translators.FirstOrDefault(y => y.Id == x.TranslatorId);
-                var finance = _dbContext.Finance.Where(y => y.AppointmentId == x.Id).ToList();
+                var institute = _dbContext.Institutions?.FirstOrDefault(y => y.Id == x.InstitutionId);
+                var traName = _dbContext.Translators?.FirstOrDefault(y => y.Id == x.TranslatorId);
+                var finance = _dbContext.Finance?.Where(y => y.AppointmentId == x.Id).ToList();
 
-                var pay = finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "P") ?? new Finance();
-                var rec = finance.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "R") ?? new Finance();
+                var pay = finance?.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "P");
+                var rec = finance?.FirstOrDefault(y => y.AppointmentId == x.Id && y.Type == "R");
 
                 model.Add(new AppointmentDetailViewModel
                 {
@@ -105,10 +112,10 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         Id = x.Id,
                         AppointmentId = x.AppointmentId,
                         TranslatorId = x.TranslatorId,
-                        TranslatorName = traName.FirstName + " " + traName.LastName,
+                        TranslatorName = traName?.FirstName + " " + traName?.LastName,
                         InstitutionId = x.InstitutionId,
-                        InstitutionName = institute.Name,
-                        InstitutionAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
+                        InstitutionName = institute?.Name,
+                        InstitutionAddress = institute?.Address + " \n " + institute?.Postcode + " " + institute?.City,
                         Type = x.Type,
                         EntryDate = x.EntryDate,
                         AppointmentDate = x.AppointmentDate,
@@ -117,8 +124,13 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         Hours = x.Hours,
                         Discount = x.Discount,
                         NetPayment = x.NetPayment,
-                        Status = finance.Count > 0 ?  x.AppointmentDate < DateTime.Now &&
-                    (!x.Status.Equals("Ausstehend") || !x.Status.Equals("abgeschlossen")) ? "verunsichert" : x.Status : x.Status,
+                        Status = finance?.Count > 0 
+                            ? x.AppointmentDate < DateTime.Now &&
+                              (!string.Equals(x.Status, "Ausstehend", StringComparison.OrdinalIgnoreCase) || 
+                               !string.Equals(x.Status, "abgeschlossen", StringComparison.OrdinalIgnoreCase))
+                                ? "verunsichert"
+                                : (x.Status ?? "unknown") 
+                            : (x.Status ?? "unknown"),
                         IsDeleted = x.isDeleted,
                         Attachments = x.Attachments,
                         Language = x.Language,
@@ -134,15 +146,15 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         DeletedBy = x.DeletedBy,
                         DeletedDate = x.DeletedDate
                     },
-                    Payable = pay == null ? new FinanceViewModel() : new FinanceViewModel
+                    Payable = (pay is null || institute is null || traName is null) ? new FinanceViewModel() : new FinanceViewModel
                     {
                         Id = x.Id,
                         AppointmentId_Fk = pay.AppointmentId,
                         AppointmentId = x.AppointmentId,
                         AppointmentDate = x.AppointmentDate.ToShortDateString(),
-                        AppointmentInstitute = institute.Name,
-                        InstituteAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
-                        AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                        AppointmentInstitute = institute?.Name,
+                        InstituteAddress = institute?.Address + " \n " + institute?.Postcode + " " + institute?.City,
+                        AppointmentTranslator = traName?.FirstName + " " + traName?.LastName,
                         AppointmentLanguage = x.Language,
                         AppointmentType = x.Type,
 
@@ -172,15 +184,15 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         CompletionBy = pay.CompletionBy,
                         CompletionDate = pay.CompletionDate
                     },
-                    Receivable = rec == null ? new FinanceViewModel() : new FinanceViewModel
+                    Receivable = (rec is null || pay is null || institute is null || traName is null) ? new FinanceViewModel() : new FinanceViewModel
                     {
                         Id = x.Id,
                         AppointmentId_Fk = pay.AppointmentId,
                         AppointmentId = x.AppointmentId,
                         AppointmentDate = x.AppointmentDate.ToShortDateString(),
-                        AppointmentInstitute = institute.Name,
-                        InstituteAddress = institute.Address + " \n " + institute.Postcode + " " + institute.City,
-                        AppointmentTranslator = traName.FirstName + " " + traName.LastName,
+                        AppointmentInstitute = institute?.Name,
+                        InstituteAddress = institute?.Address + " \n " + institute?.Postcode + " " + institute?.City,
+                        AppointmentTranslator = traName?.FirstName + " " + traName?.LastName,
                         AppointmentLanguage = x.Language,
                         AppointmentType = x.Type,
 
@@ -202,9 +214,11 @@ namespace Appointment_Management_System.Services.AppointmentModule
                     }
                 });
             });
+            
             return model;
         }
 
+        [HttpGet]
         public List<PieChartViewModel> GetAppointmentStats()
         {
             List<PieChartViewModel> model = new List<PieChartViewModel>();
@@ -247,8 +261,6 @@ namespace Appointment_Management_System.Services.AppointmentModule
         {
             try
             {
-                FinanceService finance = new FinanceService(_dbContext);
-
                 if (model is not null)
                 {
                     var appCount = _dbContext.AppointmentInfo.Where(x => x.AppointmentId == model.AppointmentId && x.isDeleted == null).Count();
@@ -359,8 +371,6 @@ namespace Appointment_Management_System.Services.AppointmentModule
         {
             try
             {
-                FinanceService finance = new FinanceService(_dbContext);
-
                 if (model is not null)
                 {
                     var app = _dbContext.AppointmentInfo.SingleOrDefault(x => x.Id == model.id && x.isDeleted == null);
@@ -379,7 +389,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         fin.Tax = 19;
                         fin.CreatedBy = model.userId;
 
-                        finance.Create(fin);
+                        _financeService.Create(fin);
 
                         //Receivable leg
                         fin.AppointmentId_Fk = app.Id;
@@ -387,7 +397,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                         fin.Type = "R";
                         fin.Tax = 19;
                         fin.CreatedBy = model.userId;
-                        finance.Create(fin);
+                        _financeService.Create(fin);
 
                         _dbContext.Entry(app).State = EntityState.Modified;
                         _dbContext.SaveChanges();
@@ -409,6 +419,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                 return Json(new { success = false, message = e.Message });
             }
         }
+        
         [HttpPost]
         public JsonResult DeleteAppointment([FromBody] ParamsViewModel model)
         {
@@ -477,7 +488,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
 
             }
         }
-        public async Task SendEmailAsync(string fromName, string fromEmail, string fromEmailPassword, string toEmail, string subject, string body, List<FileStreamResult> streamList, string toName = null)
+        private async Task SendEmailAsync(string fromName, string fromEmail, string fromEmailPassword, string toEmail, string subject, string body, List<FileStreamResult> streamList, string toName = null)
         {
             try
             {
@@ -567,6 +578,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                 return new ContentResult { StatusCode = (int)HttpStatusCode.InternalServerError, Content = "Unable to Upload File" + ex.Message };
             }
         }
+        
         [HttpPost]
         public async Task<IActionResult> DownloadWord(IFormCollection files)
         {
@@ -626,6 +638,7 @@ namespace Appointment_Management_System.Services.AppointmentModule
                 return new ContentResult { StatusCode = (int)HttpStatusCode.InternalServerError, Content = "Unable to Upload File" + ex.Message };
             }
         }
+        
         [HttpPost]
         public async Task<IActionResult> UploadAndEmail(IFormCollection files)
         {
@@ -710,7 +723,8 @@ namespace Appointment_Management_System.Services.AppointmentModule
                 throw ex;
             }
         }
-        public FileStreamResult AttachFile(string filename)
+        
+        private FileStreamResult AttachFile(string filename)
         {
             try
             {
@@ -768,9 +782,5 @@ namespace Appointment_Management_System.Services.AppointmentModule
 
         #endregion
 
-    }
-    public class FileData
-    {
-        public string Name { get; set; }
     }
 }

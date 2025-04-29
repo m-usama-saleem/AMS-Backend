@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Appointment_Management_System.Data;
 
 namespace Appointment_Management_System.Services.Common
 {
@@ -18,16 +19,16 @@ namespace Appointment_Management_System.Services.Common
             _dbContext = databaseContext;
         }
 
+        [HttpGet]
         public List<Translators> GetTranslators()
         {
             return _dbContext.Translators.Where(x => x.isDeleted == null).ToList();
         }
 
+        [HttpGet]
         public List<Institutions> GetInstitutions()
         {
             return _dbContext.Institutions.Where(x => x.isDeleted == null).ToList();
         }
-
-
     }
 }
