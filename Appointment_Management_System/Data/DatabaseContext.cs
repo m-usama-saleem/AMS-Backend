@@ -1,13 +1,11 @@
-﻿using Appointment_Management_System.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Appointment_Management_System.Models;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Appointment_Management_System.Models
+namespace Appointment_Management_System.Data
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : DbContext, IDatabaseContext
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
@@ -26,6 +24,7 @@ namespace Appointment_Management_System.Models
             var result = base.SaveChanges();
             return result;
         }
+        
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{
         //    modelBuilder.Entity<AppUsers>()

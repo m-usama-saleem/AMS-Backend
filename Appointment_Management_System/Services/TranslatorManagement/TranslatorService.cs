@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Appointment_Management_System.Data;
 
 namespace Appointment_Management_System.Services.TranslatorManagement
 {
@@ -21,6 +22,8 @@ namespace Appointment_Management_System.Services.TranslatorManagement
         }
 
         #region Get 
+        
+        [HttpGet]
         public List<Translators> GetAll()
         {
             return _dbContext.Translators.Where(x => x.isDeleted == null).OrderByDescending(x => x.CreatedAt).ToList();

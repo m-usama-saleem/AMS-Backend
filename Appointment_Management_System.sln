@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Appointment_Management_System", "Appointment_Management_System\Appointment_Management_System.csproj", "{AADF88C5-FD0F-4E39-9B1F-FA83EB3AEF83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Appointment_Management_System.UnitTests", "Appointment_Management_System.UnitTests\Appointment_Management_System.UnitTests.csproj", "{E299EEC3-E3DF-4B4B-AAC8-C63AE9A99AF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Appointment_Management_System.IntegrationTests", "Appointment_Management_System.IntegrationTests\Appointment_Management_System.IntegrationTests.csproj", "{31DE0965-1F58-4234-A33D-CD97024EB629}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{AADF88C5-FD0F-4E39-9B1F-FA83EB3AEF83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AADF88C5-FD0F-4E39-9B1F-FA83EB3AEF83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AADF88C5-FD0F-4E39-9B1F-FA83EB3AEF83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E299EEC3-E3DF-4B4B-AAC8-C63AE9A99AF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E299EEC3-E3DF-4B4B-AAC8-C63AE9A99AF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E299EEC3-E3DF-4B4B-AAC8-C63AE9A99AF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E299EEC3-E3DF-4B4B-AAC8-C63AE9A99AF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31DE0965-1F58-4234-A33D-CD97024EB629}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31DE0965-1F58-4234-A33D-CD97024EB629}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31DE0965-1F58-4234-A33D-CD97024EB629}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31DE0965-1F58-4234-A33D-CD97024EB629}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

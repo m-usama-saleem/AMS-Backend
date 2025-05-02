@@ -1,3 +1,4 @@
+using System;
 using Appointment_Management_System.Middleware;
 using Appointment_Management_System.Models;
 using Appointment_Management_System.Services;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
+using Appointment_Management_System.Data;
 
 namespace Appointment_Management_System
 {
@@ -37,6 +39,7 @@ namespace Appointment_Management_System
             services.AddCors();
 
             services.AddControllers();
+            services.AddScoped<IDatabaseContext, DatabaseContext>();
             services.AddScoped<ICommonService, CommonService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
@@ -44,15 +47,40 @@ namespace Appointment_Management_System
             services.AddScoped<IInstitutionService, InstitutionService>();
             services.AddScoped<IFinanceService, FinanceService>();
 
+            //Configure OpenAPI Swagger docs
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            Console.WriteLine("Environment type name: {0}", env.EnvironmentName);
+            if (env.IsDevelopment() || env.IsEnvironment("Testing"))
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
+            
+            // Ensure database is created at startup for development only
+            using (var serviceScope = app.ApplicationServices.CreateScope())
+            {
+                var dbContext = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
+                if (env.IsEnvironment("Testing"))
+                {
+                    dbContext.Database.EnsureCreated();
+                }
+                // open this section if required for production,
+                // but make sure to trigger ci/cd pipeline for app whenever migrations are pushed
+                // else
+                // {
+                //     dbContext.Database.Migrate();
+                // }
+
+            }
+            
             app.UseMiddleware(typeof(ExceptionHandlingMiddleware));
             app.UseCors(builder => builder.WithOrigins("http://localhost:3000", "http://localhost:8010", "http://NOUMANQURESHI:8010")
                 .AllowAnyOrigin()

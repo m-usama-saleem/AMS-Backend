@@ -1,0 +1,44 @@
+﻿services:
+  
+  # Build the .NET application
+  api:
+    build: .
+    ports:
+      - "5001:8080"
+    depends_on:
+      - sqlserver
+    restart: on-failure
+    environment:
+      ASPNETCORE_ENVIRONMENT: Testing
+      ConnectionStrings__myconn: "Server=sqlserver;Database=AMS;User=sa;Password=Your_password123;Encrypt=False;"
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+    networks:
+      - appnetwork
+  
+  # SQL Server container
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64  # Forces AMD64 even on ARM Mac
+    environment:
+      SA_PASSWORD: "Your_password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - appnetwork
+    volumes:
+      - sqlvolume:/var/opt/mssql
+  
+  # Mailpit for SMTP server
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"  # Web UI
+      - "1025:1025"  # SMTP
+
+networks:
+  appnetwork:
+    
+volumes:
+  sqlvolume:

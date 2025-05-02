@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Appointment_Management_System.Data;
 
 namespace Appointment_Management_System.Services.UserManagement
 {
@@ -20,6 +21,8 @@ namespace Appointment_Management_System.Services.UserManagement
         }
 
         #region Get 
+        
+        [HttpGet]
         public List<AppUsers> GetAll()
         {
             try
@@ -69,6 +72,7 @@ namespace Appointment_Management_System.Services.UserManagement
             }
         }
 
+        [HttpGet]
         public String LogOut()
         {
 
